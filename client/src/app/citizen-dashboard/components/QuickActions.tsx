@@ -2,6 +2,7 @@
 
 import { Megaphone, ClipboardList, Map as MapIcon, Bell } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const actions = [
     {
@@ -10,6 +11,7 @@ const actions = [
         color: "bg-orange-600 text-white",
         hoverColor: "hover:bg-orange-700",
         shadow: "shadow-orange-200",
+        href: "/dashboard/complaint/new", // Assuming this is the route, checking file structure it is app/complaint/page.tsx -> /complaint
     },
     {
         icon: ClipboardList,
@@ -17,6 +19,7 @@ const actions = [
         color: "bg-blue-50 text-blue-600 border border-blue-100",
         hoverColor: "hover:bg-blue-100",
         shadow: "shadow-blue-50",
+        href: "/citizen-dashboard?view=my-complaints", // Conceptual, or maybe just a filter toggle
     },
     {
         icon: MapIcon,
@@ -24,6 +27,7 @@ const actions = [
         color: "bg-white text-gray-700 border border-gray-100",
         hoverColor: "hover:bg-gray-50",
         shadow: "shadow-gray-100",
+        href: "/citizen-dashboard?view=map",
     },
     {
         icon: Bell,
@@ -32,10 +36,13 @@ const actions = [
         hoverColor: "hover:bg-gray-50",
         shadow: "shadow-gray-100",
         badge: 3,
+        href: "#",
     },
 ];
 
 export default function QuickActions() {
+    const router = useRouter();
+
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
             {actions.map((action, index) => (
@@ -43,6 +50,11 @@ export default function QuickActions() {
                     key={action.label}
                     whileHover={{ y: -5 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                        if (action.href && action.href !== '#') {
+                            router.push(action.href);
+                        }
+                    }}
                     className={`relative p-6 rounded-2xl flex flex-col items-center justify-center gap-3 transition-all shadow-sm hover:shadow-lg ${action.color} ${action.hoverColor} ${action.shadow}`}
                 >
                     {action.badge && (
