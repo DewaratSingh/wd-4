@@ -75,7 +75,7 @@ export default function ComplaintPage() {
 
         setDistanceCheck('checking');
         try {
-            const response = await fetch('http://localhost:3000/api/check-location', {
+            const response = await fetch('http://localhost:5000/api/check-location', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(location)
@@ -116,7 +116,13 @@ export default function ComplaintPage() {
             formData.append('latitude', location.latitude.toString());
             formData.append('longitude', location.longitude.toString());
 
-            const response = await fetch('http://localhost:3000/api/complaint', {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                formData.append('user_id', user.id);
+            }
+
+            const response = await fetch('http://localhost:5000/api/complaint', {
                 method: 'POST',
                 body: formData
             });

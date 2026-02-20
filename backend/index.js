@@ -1,9 +1,11 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const multer = require('multer');
-const { Pool } = require('pg');
-const cloudinary = require('cloudinary').v2;
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import multer from 'multer';
+import pg from 'pg';
+const { Pool } = pg;
+import { v2 as cloudinary } from 'cloudinary';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -77,6 +79,9 @@ const initDb = async () => {
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='resolved_text') THEN
                     ALTER TABLE complaints ADD COLUMN resolved_text TEXT;
                 END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='user_id') THEN
+                    ALTER TABLE complaints ADD COLUMN user_id INTEGER;
+                END IF;
             END$$;
 
             CREATE TABLE IF NOT EXISTS municipalities (
@@ -90,6 +95,14 @@ const initDb = async () => {
                 radius DECIMAL(10, 2),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         `);
         console.log("Database initialized");
     } catch (err) {
@@ -100,7 +113,68 @@ const initDb = async () => {
 initDb();
 
 // ... (Authentication Endpoints remain) ...
+// --- User Authentication Endpoints ---
+
+app.post('/api/user/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO users (username, email, password)
+             VALUES ($1, $2, $3)
+             RETURNING id, username, email`,
+            [username, email, password]
+        );
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error("User signup error:", err);
+        if (err.code === '23505') { // Unique violation
+            return res.status(400).json({ error: 'Email already exists' });
+        }
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/user/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    try {
+        const result = await pool.query(
+            `SELECT id, username, email FROM users WHERE email = $1 AND password = $2`,
+            [email, password]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error("User login error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // INSERT NEW ENDPOINTS HERE
+
+app.get('/api/user-complaints/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM complaints WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+        res.json({ success: true, complaints: result.rows });
+    } catch (err) {
+        console.error("Get user complaints error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 app.get('/api/complaint/:id', async (req, res) => {
     const { id } = req.params;
@@ -288,7 +362,7 @@ app.post('/api/my-complaints', async (req, res) => {
 
 
 app.post('/api/complaint', upload.single('image'), async (req, res) => {
-    const { notes, phone, latitude, longitude } = req.body;
+    const { notes, phone, latitude, longitude, user_id } = req.body;
     const file = req.file;
 
     if (!file || !latitude || !longitude) {
@@ -314,11 +388,11 @@ app.post('/api/complaint', upload.single('image'), async (req, res) => {
 
         // Save to Database
         const insertQuery = `
-            INSERT INTO complaints (image_url, notes, phone, latitude, longitude)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO complaints (image_url, notes, phone, latitude, longitude, user_id)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
         `;
-        const dbResult = await pool.query(insertQuery, [imageUrl, notes, phone, latitude, longitude]);
+        const dbResult = await pool.query(insertQuery, [imageUrl, notes, phone, latitude, longitude, user_id]);
 
         res.json({ success: true, data: dbResult.rows[0] });
 

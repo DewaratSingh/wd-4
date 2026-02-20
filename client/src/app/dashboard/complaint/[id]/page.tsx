@@ -24,7 +24,7 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
 
     const fetchComplaint = async () => {
         try {
-            const res = await fetch(`http://localhost:3000/api/complaint/${id}`);
+            const res = await fetch(`http://localhost:5000/api/complaint/${id}`);
             const data = await res.json();
             if (data.success) {
                 setComplaint(data.complaint);
@@ -42,7 +42,7 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
         setUpdating(true);
         setMessage('');
         try {
-            const res = await fetch('http://localhost:3000/api/complaint/update', {
+            const res = await fetch('http://localhost:5000/api/complaint/update', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -72,8 +72,8 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
         <button
             onClick={() => setProgress(status)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${progress === status
-                    ? `bg-${color}-600 border-${color}-400 text-white ring-2 ring-${color}-400 ring-offset-2 ring-offset-gray-900`
-                    : `bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700`
+                ? `bg-${color}-600 border-${color}-400 text-white ring-2 ring-${color}-400 ring-offset-2 ring-offset-gray-900`
+                : `bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700`
                 }`}
         >
             <Icon size={18} />

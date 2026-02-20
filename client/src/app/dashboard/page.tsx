@@ -24,7 +24,7 @@ export default function DashboardPage() {
 
     const fetchComplaints = async (currentUser: any) => {
         try {
-            const res = await fetch('http://localhost:3000/api/my-complaints', {
+            const res = await fetch('http://localhost:5000/api/my-complaints', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -90,8 +90,8 @@ export default function DashboardPage() {
                                         {new Date(complaint.created_at).toLocaleDateString()}
                                     </div>
                                     <div className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded backdrop-blur-sm ${complaint.progress === 'Resolved' ? 'bg-green-600' :
-                                            complaint.progress === 'Work in Progress' ? 'bg-yellow-600' :
-                                                complaint.progress === 'Closed' ? 'bg-gray-600' : 'bg-red-600'
+                                        complaint.progress === 'Work in Progress' ? 'bg-yellow-600' :
+                                            complaint.progress === 'Closed' ? 'bg-gray-600' : 'bg-red-600'
                                         }`}>
                                         {complaint.progress || 'Pending'}
                                     </div>
