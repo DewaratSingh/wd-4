@@ -39,15 +39,27 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-export default function StatusDonutChart() {
-    const total = 1247;
+export default function StatusDonutChart({ statusCounts }: { statusCounts: any }) {
+    if (!statusCounts) return null;
+
+    const total = Object.values(statusCounts).reduce((a: any, b: any) => a + b, 0) as number;
+
+    const statusData = [
+        { name: "Resolved", value: statusCounts['Resolved'] || 0, color: "#22c55e" },
+        { name: "Submitted", value: statusCounts['Submitted'] || 0, color: "#ef4444" },
+        { name: "Pending", value: statusCounts['Pending'] || 0, color: "#f97316" }, // Orange for Pending
+        { name: "In Progress", value: statusCounts['In Progress'] || 0, color: "#f59e0b" },
+        { name: "Assigned", value: statusCounts['Assigned'] || 0, color: "#3b82f6" },
+        { name: "Under Review", value: statusCounts['Under Review'] || 0, color: "#6366f1" },
+        { name: "Rejected", value: statusCounts['Rejected'] || 0, color: "#1f2937" },
+    ].filter(item => item.value > 0);
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex flex-col"
+            className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex flex-col h-full"
         >
             <div className="mb-4">
                 <h3 className="text-gray-900 font-bold text-base">By Status</h3>
@@ -56,32 +68,30 @@ export default function StatusDonutChart() {
                 </p>
             </div>
 
-            <div className="flex-1 flex flex-col items-center">
+            <div className="flex-1 flex flex-col items-center justify-center">
                 {/* Donut Chart */}
                 <div className="relative w-[200px] h-[200px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={statusData}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={62}
-                                outerRadius={90}
-                                paddingAngle={2}
-                                dataKey="value"
-                                startAngle={90}
-                                endAngle={-270}
-                                isAnimationActive={true}
-                                animationBegin={200}
-                                animationDuration={1200}
-                            >
-                                {statusData.map((entry, i) => (
-                                    <Cell key={i} fill={entry.color} stroke="white" strokeWidth={2} />
-                                ))}
-                            </Pie>
-                            <Tooltip content={<CustomTooltip />} />
-                        </PieChart>
-                    </ResponsiveContainer>
+                    <PieChart width={200} height={200}>
+                        <Pie
+                            data={statusData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={62}
+                            outerRadius={90}
+                            paddingAngle={2}
+                            dataKey="value"
+                            startAngle={90}
+                            endAngle={-270}
+                            isAnimationActive={true}
+                            animationBegin={200}
+                            animationDuration={1200}
+                        >
+                            {statusData.map((entry, i) => (
+                                <Cell key={i} fill={entry.color} stroke="white" strokeWidth={2} />
+                            ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                    </PieChart>
 
                     {/* Center label */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -104,18 +114,9 @@ export default function StatusDonutChart() {
                             key={item.name}
                             color={item.color}
                             label={item.name}
-                            value={item.value}
+                            value={Math.round((item.value / total) * 100)}
                         />
                     ))}
-                </div>
-
-                {/* Percentage labels around the donut matching screenshot */}
-                <div className="mt-2 flex gap-4 text-[11px] text-gray-500 justify-center">
-                    <span className="text-green-500 font-semibold">27.4%</span>
-                    <span className="text-gray-400">|</span>
-                    <span className="text-yellow-500 font-semibold">15.2%</span>
-                    <span className="text-gray-400">|</span>
-                    <span className="text-indigo-500 font-semibold">18.8%</span>
                 </div>
             </div>
         </motion.div>

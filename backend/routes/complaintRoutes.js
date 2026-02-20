@@ -204,4 +204,57 @@ router.post('/check-location', (req, res) => {
     }
 });
 
+// Dashboard Stats
+router.get('/stats', async (req, res) => {
+    try {
+        // 1. Total Complaints
+        const totalResult = await pool.query('SELECT COUNT(*) FROM complaints');
+        const total = parseInt(totalResult.rows[0].count);
+
+        // 2. Status Distribution
+        const statusResult = await pool.query('SELECT progress, COUNT(*) FROM complaints GROUP BY progress');
+        const statusCounts = statusResult.rows.reduce((acc, row) => {
+            acc[row.progress] = parseInt(row.count);
+            return acc;
+        }, {});
+
+        // 3. Pending (Submitted, In Progress, Assigned, Pending)
+        // Note: 'Pending' is the default in DB, mapping it to 'Submitted' logic if needed, or just summing it up.
+        const pending = (statusCounts['Submitted'] || 0) +
+            (statusCounts['In Progress'] || 0) +
+            (statusCounts['Assigned'] || 0) +
+            (statusCounts['Pending'] || 0);
+
+        // 4. Resolved Count
+        const resolved = statusCounts['Resolved'] || 0;
+
+        // 5. Trend (Last 7 days)
+        const trendResult = await pool.query(`
+            SELECT
+                to_char(created_at, 'Mon DD') as date,
+                COUNT(*) as total,
+                SUM(CASE WHEN progress = 'Resolved' THEN 1 ELSE 0 END) as resolved
+            FROM complaints
+            WHERE created_at >= NOW() - INTERVAL '7 days'
+            GROUP BY 1
+            ORDER BY MIN(created_at)
+        `);
+
+        res.json({
+            success: true,
+            stats: {
+                total,
+                pending,
+                resolved,
+                statusCounts,
+                trend: trendResult.rows
+            }
+        });
+
+    } catch (err) {
+        console.error("Get stats error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 export default router;
