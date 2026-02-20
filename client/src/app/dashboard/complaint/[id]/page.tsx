@@ -64,7 +64,7 @@ export default function ComplaintDetailPage() {
 
     const fetchComplaint = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/complaint/${id}`);
+            const res = await fetch(`http://localhost:3000/api/complaint/${id}`);
             const data = await res.json();
             if (data.success) {
                 setComplaint(data.complaint);

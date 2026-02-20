@@ -11,7 +11,7 @@ const actions = [
         color: "bg-orange-600 text-white",
         hoverColor: "hover:bg-orange-700",
         shadow: "shadow-orange-200",
-        href: "/dashboard/complaint/new", // Assuming this is the route, checking file structure it is app/complaint/page.tsx -> /complaint
+        href: "/complaint",
     },
     {
         icon: ClipboardList,
@@ -19,7 +19,7 @@ const actions = [
         color: "bg-blue-50 text-blue-600 border border-blue-100",
         hoverColor: "hover:bg-blue-100",
         shadow: "shadow-blue-50",
-        href: "/citizen-dashboard?view=my-complaints", // Conceptual, or maybe just a filter toggle
+        href: "/citizen-dashboard?view=my-complaints",
     },
     {
         icon: MapIcon,
@@ -27,7 +27,7 @@ const actions = [
         color: "bg-white text-gray-700 border border-gray-100",
         hoverColor: "hover:bg-gray-50",
         shadow: "shadow-gray-100",
-        href: "/citizen-dashboard?view=map",
+        href: "/dashboard/map",
     },
     {
         icon: Bell,

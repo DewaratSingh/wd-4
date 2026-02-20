@@ -18,6 +18,11 @@ export default function ComplaintPage() {
     const [errorMsg, setErrorMsg] = useState('');
     const [successData, setSuccessData] = useState<any>(null);
 
+    // Duplicate detection states
+    const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+    const [duplicates, setDuplicates] = useState<any[]>([]);
+    const [checkingDuplicates, setCheckingDuplicates] = useState(false);
+
     // Get location continuously
     useEffect(() => {
         if (!navigator.geolocation) {
@@ -73,7 +78,6 @@ export default function ComplaintPage() {
         setErrorMsg('');
 
         try {
-            // Convert base64 to blob
             const res = await fetch(image);
             const blob = await res.blob();
 
@@ -90,7 +94,7 @@ export default function ComplaintPage() {
                 formData.append('user_id', user.id);
             }
 
-            const response = await fetch('http://localhost:5000/api/complaint', {
+            const response = await fetch('http://localhost:3000/api/complaint', {
                 method: 'POST',
                 body: formData
             });
@@ -109,6 +113,41 @@ export default function ComplaintPage() {
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await checkForDuplicates();
+    };
+
+    const handleSupportExisting = async (complaintId: number) => {
+        try {
+            const currentUser = localStorage.getItem('currentUser');
+            const userId = currentUser ? JSON.parse(currentUser).id : null;
+
+            const response = await fetch(`http://localhost:3000/api/complaint/${complaintId}/upvote`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+
+            if (response.ok) {
+                setShowDuplicateModal(false);
+                setSuccessData({
+                    id: complaintId,
+                    message: 'Your support has been added to the existing complaint!'
+                });
+                setStep(4);
+            }
+        } catch (err) {
+            console.error("Upvote error:", err);
+            setErrorMsg("Failed to add support");
+        }
+    };
+
+    const handleSubmitAnyway = () => {
+        setShowDuplicateModal(false);
+        submitComplaint();
     };
 
     return (
