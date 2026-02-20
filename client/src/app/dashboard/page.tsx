@@ -11,6 +11,8 @@ import CategoryPanel from "./components/CategoryPanel";
 import NeedsAttentionPanel from "./components/NeedsAttentionPanel";
 import WardPerformancePanel from "./components/WardPerformancePanel";
 import AdminActivityHeatmap from "./components/AdminActivityHeatmap";
+import CivicPriorityIndex from "./components/CivicPriorityIndex";
+import ResolutionMatrix from "./components/ResolutionMatrix";
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<any>(null);
@@ -70,8 +72,14 @@ export default function DashboardPage() {
                         <AdminActivityHeatmap />
                     </div>
 
-                    {/* Row 4 — By Category | Needs Attention | Ward Performance */}
-                    <div className="grid grid-cols-3 gap-4 pb-6">
+                    {/* Row 4 — Advanced Analytics: Priority & Resolution Matrix */}
+                    <div className="grid grid-cols-2 gap-6">
+                        <CivicPriorityIndex />
+                        <ResolutionMatrix />
+                    </div>
+
+                    {/* Row 5 — By Category | Needs Attention | Ward Performance */}
+                    <div className="grid grid-cols-3 gap-6 pb-6">
                         <CategoryPanel />
                         <NeedsAttentionPanel />
                         <WardPerformancePanel />

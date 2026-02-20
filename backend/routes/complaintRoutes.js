@@ -460,6 +460,58 @@ Return ONLY a JSON object: {"similarity": percentage, "reason": "1-sentence expl
     }
 });
 
+// Advanced Dashboard Stats
+router.get('/stats/advanced', async (req, res) => {
+    try {
+        // 1. Category Metrics: Volume, Engagement, and Resolution Rate
+        const categoryResult = await pool.query(`
+            SELECT 
+                category, 
+                COUNT(*) as volume,
+                AVG(upvotes) as avg_upvotes,
+                SUM(CASE WHEN progress = 'Resolved' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as resolution_rate
+            FROM complaints 
+            GROUP BY category
+        `);
+
+        // 2. Department Efficiency: Avg Resolution Time (in hours)
+        const efficiencyResult = await pool.query(`
+            SELECT 
+                category,
+                AVG(EXTRACT(EPOCH FROM (resolved_at - created_at)) / 3600) as avg_resolution_hours
+            FROM complaints 
+            WHERE progress = 'Resolved' AND resolved_at IS NOT NULL
+            GROUP BY category
+        `);
+
+        // 3. Upvote Distribution (for engagement analysis)
+        const upvoteDistResult = await pool.query(`
+            SELECT 
+                CASE 
+                    WHEN upvotes = 0 THEN '0'
+                    WHEN upvotes <= 5 THEN '1-5'
+                    WHEN upvotes <= 20 THEN '6-20'
+                    ELSE '20+'
+                END as bucket,
+                COUNT(*) as count
+            FROM complaints
+            GROUP BY 1
+            ORDER BY MIN(upvotes)
+        `);
+
+        res.json({
+            success: true,
+            categoryMetrics: categoryResult.rows,
+            departmentEfficiency: efficiencyResult.rows,
+            upvoteDistribution: upvoteDistResult.rows
+        });
+
+    } catch (err) {
+        console.error("Get advanced stats error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Dashboard Stats
 router.get('/stats', async (req, res) => {
     try {
@@ -483,9 +535,10 @@ router.get('/stats', async (req, res) => {
             SELECT
                 to_char(created_at, 'Mon DD') as date,
                 COUNT(*) as total,
-                SUM(CASE WHEN progress = 'Resolved' THEN 1 ELSE 0 END) as resolved
+                SUM(CASE WHEN progress = 'Resolved' THEN 1 ELSE 0 END) as resolved,
+                COALESCE(SUM(priority_score), 0) as severity_sum
             FROM complaints
-            WHERE created_at >= NOW() - INTERVAL '7 days'
+            WHERE created_at >= NOW() - INTERVAL '21 days'
             GROUP BY 1
             ORDER BY MIN(created_at)
         `);

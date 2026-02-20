@@ -12,6 +12,8 @@ import { CategoryDistribution, ResolutionTrend } from "./components/AnalyticsCha
 import EmergencySection from "./components/EmergencySection";
 import QuickServices from "./components/QuickServices";
 import IssuesNearYou from "./components/IssuesNearYou";
+import CommunityPriority from "./components/CommunityPriority";
+import WeatherCard from "./components/WeatherCard";
 import { motion } from "framer-motion";
 
 export default function CitizenDashboard() {
@@ -101,10 +103,26 @@ export default function CitizenDashboard() {
                                 <motion.div
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.4, delay: 0.25 }}
+                                >
+                                    <WeatherCard />
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.4, delay: 0.3 }}
                                     className="h-[350px]"
                                 >
                                     <CategoryDistribution />
+                                </motion.div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.4, delay: 0.35 }}
+                                >
+                                    <CommunityPriority />
                                 </motion.div>
 
                                 <motion.div
