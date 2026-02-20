@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertTriangle, ArrowRight, Clock, Zap } from "lucide-react";
+import { AlertTriangle, ArrowRight, Clock, Zap, ThumbsUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Complaint {
@@ -70,12 +70,35 @@ export default function ActiveComplaints() {
 
     const status = (s: string) => STATUS_STYLES[s] || STATUS_STYLES["Pending"];
 
+    const handleUpvote = async (e: React.MouseEvent, id: number) => {
+        e.stopPropagation();
+        try {
+            const user = JSON.parse(localStorage.getItem('municipalUser') || '{}');
+            const res = await fetch(`http://localhost:3000/api/complaint/${id}/upvote`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id })
+            });
+            const data = await res.json();
+            if (data.success) {
+                // Update local state
+                setComplaints(prev => prev.map(c => c.id === id ? { ...c, upvotes: data.upvotes } : c));
+                // Signal charts to refresh
+                window.dispatchEvent(new Event('refresh-data'));
+            } else {
+                alert(data.error || "Failed to upvote");
+            }
+        } catch (err) {
+            console.error("Upvote error:", err);
+        }
+    };
+
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full">
             <div className="flex justify-between items-center mb-5">
                 <h3 className="font-bold text-gray-900">Active Complaints</h3>
                 <button
-                    onClick={() => router.push("/dashboard/all-complaints")}
+                    onClick={() => router.push("/citizen-dashboard/all-complaints")}
                     className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
                 >
                     View All <ArrowRight className="w-4 h-4" />
@@ -132,24 +155,25 @@ export default function ActiveComplaints() {
                                 )}
                             </div>
 
-                            {/* Priority bar */}
-                            {score > 0 && (
-                                <div className="mt-3 flex items-center justify-between text-xs text-gray-500 border-t border-gray-50 pt-2 gap-3">
-                                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full rounded-full ${priorityLabel === "Critical" ? "bg-red-500" :
-                                                priorityLabel === "High" ? "bg-orange-500" :
-                                                    priorityLabel === "Medium" ? "bg-yellow-500" : "bg-green-500"
-                                                }`}
-                                            style={{ width: `${score}%` }}
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-1 flex-shrink-0">
-                                        <Clock className="w-3 h-3" />
-                                        {c.upvotes} upvote{c.upvotes !== 1 ? "s" : ""}
-                                    </div>
+                            {/* Priority bar & Upvote */}
+                            <div className="mt-3 flex items-center justify-between text-xs text-gray-500 border-t border-gray-50 pt-3 gap-3">
+                                <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full ${score >= 75 ? 'bg-red-500' :
+                                            score >= 50 ? 'bg-orange-500' :
+                                                score >= 25 ? 'bg-yellow-500' : 'bg-green-500'
+                                            }`}
+                                        style={{ width: `${score}%` }}
+                                    />
                                 </div>
-                            )}
+                                <button
+                                    onClick={(e) => handleUpvote(e, c.id)}
+                                    className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all font-bold"
+                                >
+                                    <ThumbsUp className="w-3.5 h-3.5" />
+                                    <span>{c.upvotes}</span>
+                                </button>
+                            </div>
                         </div>
                     );
                 })}

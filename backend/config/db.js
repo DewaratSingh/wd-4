@@ -95,6 +95,14 @@ const initDb = async () => {
                 phone VARCHAR(20),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS upvotes (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                complaint_id INTEGER REFERENCES complaints(id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, complaint_id)
+            );
         `);
         console.log("Database initialized");
     } catch (err) {

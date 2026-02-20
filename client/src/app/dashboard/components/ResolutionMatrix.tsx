@@ -36,7 +36,11 @@ export default function ResolutionMatrix() {
                 setLoading(false);
             }
         };
+
         fetchData();
+
+        window.addEventListener('refresh-data', fetchData);
+        return () => window.removeEventListener('refresh-data', fetchData);
     }, []);
 
     const getQuadrant = (hours: number, volume: number) => {
