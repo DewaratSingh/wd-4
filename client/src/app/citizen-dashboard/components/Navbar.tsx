@@ -55,8 +55,8 @@ export default function Navbar() {
 
     const navLinks = [
         { href: "/citizen-dashboard", label: "Dashboard" },
-        { href: "/citizen-dashboard?view=my-complaints", label: "My Complaints" },
-        { href: "/dashboard/map", label: "City Map" },
+        { href: user?.id ? `/citizen-dashboard/complaints/${user.id}` : "/citizen-dashboard/complaints", label: "My Complaints" },
+        { href: "/map", label: "City Map" },
         { href: "/community", label: "Community" },
         { href: "/complaint", label: "Report Issue" },
     ];
@@ -171,7 +171,7 @@ export default function Navbar() {
                                             <span>View Profile</span>
                                         </Link>
                                         <Link
-                                            href="/citizen-dashboard?view=my-complaints"
+                                            href={user?.id ? `/citizen-dashboard/complaints/${user.id}` : "/citizen-dashboard/complaints"}
                                             onClick={() => setIsProfileMenuOpen(false)}
                                             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                                         >
@@ -230,8 +230,8 @@ export default function Navbar() {
                                 href={link.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === link.href || pathname?.startsWith(link.href)
-                                        ? 'bg-blue-50 text-blue-600'
-                                        : 'text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-blue-50 text-blue-600'
+                                    : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 {link.label}

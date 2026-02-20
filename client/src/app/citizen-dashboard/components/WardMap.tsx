@@ -37,7 +37,7 @@ interface WardMapProps {
 
 export default function WardMap({ complaints }: WardMapProps) {
     const router = useRouter();
-    
+
     // Default center (Mumbai)
     const defaultCenter: [number, number] = [19.0760, 72.8777];
 
@@ -65,8 +65,8 @@ export default function WardMap({ complaints }: WardMapProps) {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
             <div className="flex justify-between items-center mb-4">
                 <h3 className="font-bold text-gray-900">Ward Map ({complaints.length} issues)</h3>
-                <button 
-                    onClick={() => router.push('/dashboard/map')}
+                <button
+                    onClick={() => router.push('/map')}
                     className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
                 >
                     Expand <Expand className="w-3 h-3" />

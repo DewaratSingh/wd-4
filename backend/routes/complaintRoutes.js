@@ -71,7 +71,7 @@ router.get('/user-complaints/:userId', async (req, res) => {
 
 // Submit a new complaint
 router.post('/complaint', upload.single('image'), async (req, res) => {
-    const { notes, phone, latitude, longitude } = req.body;
+    const { notes, phone, latitude, longitude, user_id } = req.body;
     const file = req.file;
 
     if (!file || !latitude || !longitude) {
@@ -91,8 +91,8 @@ router.post('/complaint', upload.single('image'), async (req, res) => {
         });
 
         const insertResult = await pool.query(
-            'INSERT INTO complaints (image_url, notes, phone, latitude, longitude) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [result.secure_url, notes, phone, latitude, longitude]
+            'INSERT INTO complaints (image_url, notes, phone, latitude, longitude, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [result.secure_url, notes, phone, latitude, longitude, user_id]
         );
 
         res.json({ success: true, data: insertResult.rows[0] });

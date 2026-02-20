@@ -51,7 +51,11 @@ export default function QuickActions() {
                     whileHover={{ y: -5 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => {
-                        if (action.href && action.href !== '#') {
+                        if (action.label === "My Complaints") {
+                            const currentUser = localStorage.getItem('currentUser');
+                            const userId = currentUser ? JSON.parse(currentUser).id : null;
+                            router.push(userId ? `/citizen-dashboard/complaints/${userId}` : "/citizen-dashboard/complaints");
+                        } else if (action.href && action.href !== '#') {
                             router.push(action.href);
                         }
                     }}

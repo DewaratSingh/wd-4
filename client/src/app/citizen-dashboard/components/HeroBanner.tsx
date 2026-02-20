@@ -35,6 +35,7 @@ export default function HeroBanner({ user }: HeroBannerProps) {
                     // Fetch Weather
                     const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${user.latitude}&lon=${user.longitude}&units=metric&appid=${apiKey}`);
                     const weatherData = await weatherRes.json();
+                    console.log(weatherData);
 
                     if (weatherData.cod === 200) {
                         setWeather({
@@ -98,10 +99,10 @@ export default function HeroBanner({ user }: HeroBannerProps) {
                     </div>
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium border border-white/20">
+                {/* <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full flex items-center gap-2 text-sm font-medium border border-white/20">
                     <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
                     3 active issues
-                </div>
+                </div> */}
             </div>
 
             {/* Decorative background circle */}
