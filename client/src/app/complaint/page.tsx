@@ -84,7 +84,13 @@ export default function ComplaintPage() {
             formData.append('latitude', location.latitude.toString());
             formData.append('longitude', location.longitude.toString());
 
-            const response = await fetch('http://localhost:3000/api/complaint', {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                formData.append('user_id', user.id);
+            }
+
+            const response = await fetch('http://localhost:5000/api/complaint', {
                 method: 'POST',
                 body: formData
             });
@@ -168,8 +174,8 @@ export default function ComplaintPage() {
                                     onClick={capture}
                                     disabled={locationStatus !== 'success'}
                                     className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-xl ${locationStatus === 'success'
-                                            ? 'bg-gradient-to-br from-orange-500 to-amber-500 text-white hover:scale-110 hover:shadow-orange-500/40 cursor-pointer'
-                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        ? 'bg-gradient-to-br from-orange-500 to-amber-500 text-white hover:scale-110 hover:shadow-orange-500/40 cursor-pointer'
+                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                         }`}
                                 >
                                     <Camera size={32} />

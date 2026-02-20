@@ -28,7 +28,6 @@ export default function SignupPage() {
         setError('');
 
         try {
-            // Note: Adjust endpoint if you have a specific signup endpoint
             const res = await fetch('http://localhost:3000/api/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

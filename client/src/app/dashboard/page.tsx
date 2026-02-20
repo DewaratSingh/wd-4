@@ -33,6 +33,7 @@ export default function DashboardPage() {
         fetchStats();
     }, []);
 
+
     if (loading) {
         return <div className="flex h-screen items-center justify-center bg-gray-50 text-gray-500">Loading dashboard...</div>;
     }

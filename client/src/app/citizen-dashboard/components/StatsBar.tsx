@@ -3,10 +3,10 @@
 import { CheckCircle2, RefreshCw, PlusCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-const stats = [
+const statsConfig = [
     {
         label: "RESOLVED",
-        value: "47 this month",
+        key: "resolved",
         icon: CheckCircle2,
         color: "text-green-600",
         bg: "bg-green-50",
@@ -14,7 +14,7 @@ const stats = [
     },
     {
         label: "IN PROGRESS",
-        value: "12 active",
+        key: "inProgress",
         icon: RefreshCw,
         color: "text-amber-600",
         bg: "bg-amber-50",
@@ -22,7 +22,7 @@ const stats = [
     },
     {
         label: "NEW TODAY",
-        value: "8 reports",
+        key: "newToday",
         icon: PlusCircle,
         color: "text-blue-600",
         bg: "bg-blue-50",
@@ -30,23 +30,35 @@ const stats = [
     },
 ];
 
-export default function StatsBar() {
+interface StatsBarProps {
+    stats: {
+        resolved: number;
+        inProgress: number;
+        newToday: number;
+    };
+}
+
+export default function StatsBar({ stats }: StatsBarProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-            {stats.map((stat, index) => (
+            {statsConfig.map((config, index) => (
                 <motion.div
-                    key={stat.label}
+                    key={config.label}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`group flex items-center p-4 rounded-xl border ${stat.bg} ${stat.border}`}
+                    className={`group flex items-center p-4 rounded-xl border ${config.bg} ${config.border}`}
                 >
-                    <div className={`p-3 rounded-full bg-white shadow-sm mr-4 ${stat.color}`}>
-                        <stat.icon className="w-6 h-6" />
+                    <div className={`p-3 rounded-full bg-white shadow-sm mr-4 ${config.color}`}>
+                        <config.icon className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-xs font-bold text-gray-500 tracking-wider mb-1">{stat.label}</p>
-                        <p className="text-lg font-bold text-gray-800">{stat.value}</p>
+                        <p className="text-xs font-bold text-gray-500 tracking-wider mb-1">{config.label}</p>
+                        <p className="text-lg font-bold text-gray-800">
+                            {config.key === 'resolved' && `${stats.resolved} this month`}
+                            {config.key === 'inProgress' && `${stats.inProgress} active`}
+                            {config.key === 'newToday' && `${stats.newToday} reports`}
+                        </p>
                     </div>
                 </motion.div>
             ))}
