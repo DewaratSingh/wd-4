@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import { motion } from "framer-motion";
@@ -24,6 +24,7 @@ interface Complaint {
 
 export default function UserComplaintsPage() {
     const { id } = useParams();
+    const router = useRouter();
     const [complaints, setComplaints] = useState<Complaint[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -167,7 +168,10 @@ export default function UserComplaintsPage() {
                                                         <span className="text-xs font-bold ml-1 text-orange-600">{complaint.priority_score || 0}</span>
                                                     </div>
                                                 </div>
-                                                <button className="text-blue-600 text-xs font-bold hover:underline">
+                                                <button
+                                                    onClick={() => router.push(`/citizen-dashboard/complaint/${complaint.id}`)}
+                                                    className="text-blue-600 text-xs font-bold hover:underline"
+                                                >
                                                     View Details
                                                 </button>
                                             </div>
