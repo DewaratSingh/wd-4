@@ -176,14 +176,16 @@ function Waveform() {
     );
 }
 
-export default function StatsCards() {
+export default function StatsCards({ stats }: { stats: any }) {
+    if (!stats) return null;
+
     return (
         <div className="grid grid-cols-4 gap-4">
             <StatCard
                 index={0}
                 title="Total Complaints"
-                value="1,247"
-                trend={{ label: "+23 new today", positive: true }}
+                value={stats.total.toLocaleString()}
+                trend={{ label: "All time", positive: true }}
                 accentBar="bg-blue-500"
                 accentBg="bg-blue-50"
                 accentText="text-blue-600"
@@ -194,7 +196,7 @@ export default function StatsCards() {
             <StatCard
                 index={1}
                 title="Pending Action"
-                value="89"
+                value={stats.pending.toLocaleString()}
                 badge="Require attention"
                 badgeColor="bg-orange-100 text-orange-600"
                 accentBar="bg-orange-500"
@@ -202,13 +204,13 @@ export default function StatsCards() {
                 accentText="text-orange-600"
                 icon={<AlertTriangle className="w-5 h-5 text-orange-500" />}
                 iconBg="bg-orange-50"
-                subtitle="12 high priority tickets"
+                subtitle="High priority tickets"
             />
             <StatCard
                 index={2}
-                title="Resolved This Month"
-                value="342"
-                trend={{ label: "+18% vs last month", positive: true }}
+                title="Resolved Total"
+                value={stats.resolved.toLocaleString()}
+                trend={{ label: `${((stats.resolved / stats.total) * 100).toFixed(1)}% rate`, positive: true }}
                 accentBar="bg-green-500"
                 accentBg="bg-green-50"
                 accentText="text-green-600"
@@ -216,16 +218,16 @@ export default function StatsCards() {
                 iconBg="bg-green-50"
                 extra={
                     <div className="space-y-1">
-                        <ProgressBar percent={70} />
-                        <p className="text-[10px] text-gray-400">70% of target</p>
+                        <ProgressBar percent={(stats.resolved / stats.total) * 100 || 0} />
+                        <p className="text-[10px] text-gray-400">Resolution Rate</p>
                     </div>
                 }
             />
             <StatCard
                 index={3}
-                title="Avg. Resolution Time"
-                value="4.2 days"
-                trend={{ label: "0.8 days improvement", positive: true }}
+                title="In Progress"
+                value={stats.statusCounts['In Progress'] || 0}
+                trend={{ label: "Actively working", positive: true }}
                 accentBar="bg-purple-500"
                 accentBg="bg-purple-50"
                 accentText="text-purple-600"

@@ -63,39 +63,29 @@ const SpikeDot = (props: any) => {
     );
 };
 
-export default function ComplaintTrendChart() {
+export default function ComplaintTrendChart({ trendData }: { trendData: any[] }) {
     const [period, setPeriod] = useState<Period>("Month");
+
+    // Use passed data or fallback to empty array to prevent crash
+    const chartData = trendData || [];
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm"
+            className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm h-full"
         >
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
                 <div>
                     <h3 className="text-gray-900 font-bold text-base">Complaint Trend</h3>
                     <p className="text-gray-400 text-xs mt-0.5">
-                        Overview of incoming vs resolved complaints
+                        Overview of incoming vs resolved complaints (Last 7 Days)
                     </p>
                 </div>
-                <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
-                    {(["Day", "Week", "Month"] as Period[]).map((p) => (
-                        <motion.button
-                            key={p}
-                            onClick={() => setPeriod(p)}
-                            whileTap={{ scale: 0.95 }}
-                            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 cursor-pointer ${period === p
-                                    ? "bg-white text-gray-800 shadow-sm"
-                                    : "text-gray-500 hover:text-gray-700"
-                                }`}
-                        >
-                            {p}
-                        </motion.button>
-                    ))}
-                </div>
+                {/* Period selector - hidden for now as backend only returns 7 days */}
+                {/* <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">...</div> */}
             </div>
 
             {/* Legend */}
@@ -107,10 +97,6 @@ export default function ComplaintTrendChart() {
                 <div className="flex items-center gap-2 text-xs text-gray-500">
                     <div className="w-6 h-0.5 bg-[#2d3a8c]" />
                     <span>Total Complaints</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <div className="w-3 h-3 rounded-full bg-orange-400" />
-                    <span>High Priority Spikes</span>
                 </div>
             </div>
 
@@ -124,7 +110,7 @@ export default function ComplaintTrendChart() {
                     transition={{ duration: 0.25 }}
                 >
                     <ResponsiveContainer width="100%" height={240}>
-                        <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="resolvedGrad" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
@@ -146,8 +132,6 @@ export default function ComplaintTrendChart() {
                                 tick={{ fontSize: 11, fill: "#9ca3af" }}
                                 axisLine={false}
                                 tickLine={false}
-                                domain={[0, 100]}
-                                ticks={[0, 20, 40, 60, 80]}
                             />
                             <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#e5e7eb", strokeWidth: 1 }} />
                             <Area
@@ -168,7 +152,7 @@ export default function ComplaintTrendChart() {
                                 stroke="#2d3a8c"
                                 strokeWidth={2.5}
                                 fill="url(#totalGrad)"
-                                dot={<SpikeDot />}
+                                dot={false}
                                 activeDot={{ r: 4, strokeWidth: 0, fill: "#2d3a8c" }}
                             />
                         </AreaChart>

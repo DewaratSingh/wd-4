@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Play, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { Navbar } from "./Navbar";
 import { CityIllustration } from "./CityIllustration";
 
@@ -76,19 +77,19 @@ export const Hero = () => {
                             transition={{ delay: 0.5, duration: 0.8 }}
                             className="flex flex-wrap items-center gap-4 mb-16"
                         >
-                            <button className="group relative h-14 px-8 rounded-full bg-linear-to-r from-vibrant-orange to-[#F59E0B] text-white font-bold text-lg shadow-lg shadow-vibrant-orange/25 hover:shadow-vibrant-orange/40 hover:scale-[1.02] transition-all duration-300">
+                            <Link href="/complaint" className="group relative h-14 px-8 rounded-full bg-linear-to-r from-vibrant-orange to-[#F59E0B] text-white font-bold text-lg shadow-lg shadow-vibrant-orange/25 hover:shadow-vibrant-orange/40 hover:scale-[1.02] transition-all duration-300 flex items-center">
                                 <span className="flex items-center gap-2">
                                     📍 Report an Issue Now <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </span>
-                                <div className="absolute inset-0 rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all" />
-                            </button>
+                                <div className="absolute inset-0 rounded-full ring-2 ring-white/20 group-hover:ring-white/40 transition-all pointer-events-none" />
+                            </Link>
 
-                            <button className="group flex items-center gap-3 h-14 px-8 rounded-full border border-slate-200 text-light-text-heading font-medium hover:bg-slate-50 transition-colors">
+                            <Link href="#how-it-works" className="group flex items-center gap-3 h-14 px-8 rounded-full border border-slate-200 text-light-text-heading font-medium hover:bg-slate-50 transition-colors">
                                 <div className="w-10 h-10 rounded-full bg-electric-indigo/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Play className="w-4 h-4 fill-electric-indigo text-electric-indigo" />
                                 </div>
                                 Watch How It Works
-                            </button>
+                            </Link>
                         </motion.div>
 
                         {/* Social Proof */}

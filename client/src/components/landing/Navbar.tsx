@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Shield, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 export const Navbar = () => {
     return (
@@ -31,14 +32,20 @@ export const Navbar = () => {
 
             {/* Center: Nav Links (Desktop) */}
             <div className="hidden md:flex items-center gap-8">
-                {["How It Works", "Features", "Impact", "For Cities", "Login"].map(
+                {[
+                    { label: "How It Works", href: "#how-it-works" },
+                    { label: "Features", href: "#features" },
+                    { label: "Impact", href: "#impact" },
+                    { label: "For Cities", href: "#for-cities" },
+                    { label: "Login", href: "/signin" }
+                ].map(
                     (item) => (
                         <Link
-                            key={item}
-                            href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                            key={item.label}
+                            href={item.href}
                             className="relative text-sm font-medium text-light-text-body hover:text-light-text-heading transition-colors group"
                         >
-                            {item}
+                            {item.label}
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-vibrant-orange transition-all duration-300 group-hover:w-full" />
                         </Link>
                     )
@@ -47,16 +54,20 @@ export const Navbar = () => {
 
             {/* Right: CTAs */}
             <div className="flex items-center gap-4">
-                <button className="hidden md:block px-5 py-2 text-sm font-medium text-light-text-heading border border-light-border rounded-full hover:bg-slate-50 transition-colors">
+                <div className="hidden md:block">
+                    <GoogleTranslate />
+                </div>
+
+                <Link href="/signin" className="hidden md:block px-5 py-2 text-sm font-medium text-light-text-heading border border-light-border rounded-full hover:bg-slate-50 transition-colors">
                     Admin Login
-                </button>
-                <button className="relative px-6 py-2.5 text-sm font-bold text-white bg-linear-to-r from-vibrant-orange to-orange-500 rounded-full shadow-lg shadow-vibrant-orange/20 hover:shadow-vibrant-orange/40 hover:scale-105 transition-all duration-300 group overflow-hidden">
+                </Link>
+                <Link href="/complaint" className="relative px-6 py-2.5 text-sm font-bold text-white bg-linear-to-r from-vibrant-orange to-orange-500 rounded-full shadow-lg shadow-vibrant-orange/20 hover:shadow-vibrant-orange/40 hover:scale-105 transition-all duration-300 group overflow-hidden">
                     <span className="relative z-10 flex items-center gap-2">
                         Report an Issue
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </span>
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                </button>
+                </Link>
             </div>
         </motion.nav>
     );

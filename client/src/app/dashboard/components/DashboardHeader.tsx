@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Search, Bell, HelpCircle, Command } from "lucide-react";
+import GoogleTranslate from "@/components/GoogleTranslate";
 
 export default function DashboardHeader({ title }: { title?: string }) {
     return (
@@ -18,62 +19,40 @@ export default function DashboardHeader({ title }: { title?: string }) {
                 </h2>
             </div>
 
-            {/* Search */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 }}
-                className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 w-[340px] shadow-sm group hover:border-indigo-300 hover:shadow-md transition-all duration-200"
-            >
-                <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                <input
-                    type="text"
-                    placeholder="Search complaints, wards, citizens..."
-                    className="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent outline-none"
-                />
-                <div className="flex items-center gap-0.5 text-gray-400 text-[11px] border border-gray-200 rounded px-1.5 py-0.5">
-                    <Command className="w-3 h-3" />
-                    <span>K</span>
-                </div>
-            </motion.div>
+            {/* Title */}
+            <div>
+                <h1 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h1>
+            </div>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-3">
-                {/* Live indicator */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-3 py-1.5"
-                >
-                    <motion.div
-                        animate={{ scale: [1, 1.3, 1] }}
-                        transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                        className="w-2 h-2 rounded-full bg-red-500"
+            {/* Right: Actions */}
+            <div className="flex items-center gap-6">
+                {/* Search (Visual only) */}
+                <div className="relative hidden md:block">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="pl-9 pr-4 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-indigo-100 transition-all w-64 outline-none"
                     />
-                    <span className="text-red-600 text-xs font-semibold tracking-wide">LIVE</span>
-                </motion.div>
+                </div>
 
-                {/* Notification bell */}
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:border-indigo-300 transition-colors cursor-pointer relative"
-                >
-                    <Bell className="w-4 h-4 text-gray-600" />
-                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                        3
-                    </span>
-                </motion.button>
+                <div className="h-6 w-px bg-gray-200 hidden md:block" />
 
-                {/* Help */}
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:border-indigo-300 transition-colors cursor-pointer"
-                >
-                    <HelpCircle className="w-4 h-4 text-gray-600" />
-                </motion.button>
+                <div className="flex items-center gap-4">
+                    {/* Translation */}
+                    <div className="hidden sm:block">
+                        <GoogleTranslate />
+                    </div>
+
+                    {/* Help */}
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:border-indigo-300 transition-colors cursor-pointer"
+                    >
+                        <HelpCircle className="w-4 h-4 text-gray-600" />
+                    </motion.button>
+                </div>
             </div>
         </motion.header>
     );

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Map,
@@ -19,26 +20,31 @@ const navItems = [
   {
     section: "MAIN MENU",
     items: [
-      { icon: LayoutDashboard, label: "Dashboard", active: true, badge: null },
-      { icon: Map, label: "Live Map", active: false, badge: null },
-      { icon: FileText, label: "All Complaints", active: false, badge: 12 },
-      { icon: Users, label: "Citizens", active: false, badge: null },
-      { icon: BarChart2, label: "Analytics", active: false, badge: null },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", badge: null },
+      { icon: Map, label: "Live Map", href: "/dashboard/map", badge: null },
+      { icon: FileText, label: "All Complaints", href: "/dashboard/all-complaints", badge: 12 },
+      { icon: Users, label: "Citizens", href: "/dashboard/citizens", badge: null },
+      { icon: BarChart2, label: "Analytics", href: "/dashboard/analytics", badge: null },
     ],
   },
   {
     section: "MANAGEMENT",
     items: [
-      { icon: Shield, label: "Ward Manager", active: false, badge: null },
-      { icon: Package, label: "Resources", active: false, badge: null },
-      { icon: Settings, label: "Settings", active: false, badge: null },
+      { icon: Shield, label: "Ward Manager", href: "/dashboard/ward-manager", badge: null },
+      { icon: Package, label: "Resources", href: "/dashboard/resources", badge: null },
+      { icon: Settings, label: "Settings", href: "/dashboard/settings", badge: null },
     ],
   },
 ];
 
 export default function Sidebar() {
-  const [activeItem, setActiveItem] = useState("Dashboard");
+  const pathname = usePathname();
+  const router = useRouter();
   const [hovered, setHovered] = useState<string | null>(null);
+
+  const handleNavigation = (href: string) => {
+    router.push(href);
+  };
 
   return (
     <motion.aside
@@ -52,6 +58,7 @@ export default function Sidebar() {
         <motion.div
           whileHover={{ scale: 1.02 }}
           className="flex items-center gap-3 cursor-pointer"
+          onClick={() => router.push('/dashboard')}
         >
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
             <MapPin className="w-5 h-5 text-white" />
@@ -79,23 +86,14 @@ export default function Sidebar() {
             </p>
             <ul className="space-y-0.5">
               {group.items.map((item) => {
-                const isActive = activeItem === item.label;
+                const isActive = pathname === item.href;
                 const isHover = hovered === item.label;
 
                 return (
                   <li key={item.label}>
                     <motion.button
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => {
-                        setActiveItem(item.label);
-                        if (item.label === "Live Map") {
-                          window.location.href = "/dashboard/map"; // Using window.location for simple force nav or router.push
-                        } else if (item.label === "Dashboard") {
-                          window.location.href = "/dashboard";
-                        } else if (item.label === "All Complaints") {
-                          window.location.href = "/dashboard/all-complaints";
-                        }
-                      }}
+                      onClick={() => handleNavigation(item.href)}
                       onMouseEnter={() => setHovered(item.label)}
                       onMouseLeave={() => setHovered(null)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative group cursor-pointer ${isActive
