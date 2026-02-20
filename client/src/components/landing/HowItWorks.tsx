@@ -6,17 +6,22 @@ import { Camera, MapPin, Zap, Radio, BarChart3, MessageCircle, Star, Image, Repe
 
 export const HowItWorks = () => {
     return (
-        <section id="how-it-works" className="relative py-24 bg-white overflow-hidden">
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none">
-                <div
-                    className="absolute inset-0"
-                    style={{
-                        backgroundImage: `radial-gradient(#4F46E5 1px, transparent 1px)`,
-                        backgroundSize: `24px 24px`
-                    }}
-                />
-            </div>
+        <section id="how-it-works" className="relative py-24 overflow-hidden" style={{
+            backgroundColor: '#f9fbff',
+            backgroundImage: `
+                linear-gradient(to right, #dde6f5 1px, transparent 1px),
+                linear-gradient(to bottom, #dde6f5 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+        }}>
+            {/* Top fade — blends with hero above */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white to-transparent z-10" />
+            {/* Bottom fade — blends with next section */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-white to-transparent z-10" />
+            {/* Radial accent — top-left indigo glow */}
+            <div className="pointer-events-none absolute -top-24 -left-24 w-[500px] h-[500px] rounded-full bg-indigo-100/60 blur-[120px] z-0" />
+            {/* Radial accent — bottom-right orange glow */}
+            <div className="pointer-events-none absolute -bottom-24 -right-24 w-[400px] h-[400px] rounded-full bg-orange-100/50 blur-[100px] z-0" />
 
             <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
 
@@ -54,7 +59,7 @@ export const HowItWorks = () => {
                 </div>
 
                 {/* Steps Container */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative items-stretch">
                     {/* Connecting Arrows (Desktop Only) */}
                     <div className="hidden lg:block absolute top-1/3 left-[28%] w-[10%] h-12 z-0 pointer-events-none">
                         <svg className="w-full h-full overflow-visible">
@@ -210,8 +215,13 @@ export const HowItWorks = () => {
 };
 
 const StepCard = ({ number, title, description, chips, children, color, delay }: any) => {
-    const borderColor = color === 'orange' ? 'group-hover:border-vibrant-orange/50' : color === 'indigo' ? 'group-hover:border-electric-indigo/50' : 'group-hover:border-success-emerald/50';
-    const numColor = color === 'orange' ? 'text-orange-100' : color === 'indigo' ? 'text-indigo-100' : 'text-emerald-100';
+    const borderColor = color === 'orange' ? 'group-hover:border-vibrant-orange/40' : color === 'indigo' ? 'group-hover:border-electric-indigo/40' : 'group-hover:border-success-emerald/40';
+    const numBg = color === 'orange'
+        ? 'bg-gradient-to-br from-orange-400 to-orange-500'
+        : color === 'indigo'
+            ? 'bg-gradient-to-br from-indigo-400 to-indigo-600'
+            : 'bg-gradient-to-br from-emerald-400 to-emerald-600';
+    const numShadow = color === 'orange' ? 'shadow-orange-200' : color === 'indigo' ? 'shadow-indigo-200' : 'shadow-emerald-200';
 
     return (
         <motion.div
@@ -219,11 +229,11 @@ const StepCard = ({ number, title, description, chips, children, color, delay }:
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay }}
-            className={`group relative bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 ${borderColor}`}
+            className={`group relative bg-white rounded-3xl p-8 border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col ${borderColor}`}
         >
-            {/* Watermark Number */}
-            <div className={`absolute -top-6 -right-4 text-[120px] font-black leading-none opacity-50 select-none pointer-events-none transition-colors duration-300 ${numColor}`}>
-                {number}
+            {/* Step Number Badge */}
+            <div className={`absolute top-6 right-6 w-12 h-12 rounded-2xl ${numBg} shadow-lg ${numShadow} flex items-center justify-center select-none z-10`}>
+                <span className="text-white font-black text-sm tracking-wider">{number}</span>
             </div>
 
             {/* Visual Area */}
@@ -232,9 +242,9 @@ const StepCard = ({ number, title, description, chips, children, color, delay }:
             </div>
 
             {/* Content */}
-            <div className="relative z-10">
-                <h3 className="text-2xl font-bold text-slate-900 mb-3">{title}</h3>
-                <p className="text-slate-600 mb-6 leading-relaxed text-sm">
+            <div className="relative z-10 flex-1 flex flex-col">
+                <h3 className="text-2xl font-bold text-slate-900 mb-3 pr-10">{title}</h3>
+                <p className="text-slate-600 mb-6 leading-relaxed text-sm flex-1">
                     {description}
                 </p>
 

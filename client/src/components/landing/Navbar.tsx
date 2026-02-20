@@ -14,7 +14,7 @@ const NAV_LINKS = [
     { label: "Login", href: "/signin" },
 ];
 
-// Smooth-scroll to an anchor with offset to clear the fixed navbar (~72px)
+// Smooth-scroll to an anchor with offset to clear the fixed navbar (~80px)
 const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (!href.startsWith("#")) return; // Let Next.js handle page routes normally
     e.preventDefault();

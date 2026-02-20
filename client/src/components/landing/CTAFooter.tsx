@@ -278,7 +278,7 @@ export const CTAFooter = () => {
                             sub="Report your first civic issue in under 60 seconds. No bureaucracy, no waiting — just results."
                             btnLabel="Start Reporting"
                             accent="orange"
-                            footerNote="No signup needed to browse issues"
+                            footerNote="signup needed to browse issues"
                             perks={[
                                 "Real-time complaint tracking",
                                 "Photo & location upload",
