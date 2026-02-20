@@ -52,22 +52,32 @@ export default function DashboardPage() {
     if (!user) return null;
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Navbar */}
-            <nav className="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 z-10">
-                <div className="flex items-center gap-2 text-blue-400 font-bold text-xl">
-                    <LayoutDashboard />
-                    <span>{user.municipal_name} Dashboard</span>
+        <div className="min-h-screen bg-gray-900 text-white p-4">
+            {/* Header */}
+            <header className="flex justify-between items-center mb-8 bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-lg">
+                <div className="flex items-center gap-3">
+                    <div className="bg-blue-600 p-2 rounded-lg">
+                        <LayoutDashboard size={24} className="text-white" />
+                    </div>
+                    <h1 className="text-xl font-bold tracking-tight">Municipal Dashboard</h1>
                 </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-400">Radius: {user.radius}km</span>
-                    <button onClick={handleLogout} className="bg-red-900/50 hover:bg-red-900 text-red-200 px-3 py-1 rounded flex items-center gap-1 text-sm border border-red-800 transition">
-                        <LogOut size={14} /> Logout
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => router.push('/dashboard/map')}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg transition text-sm font-medium"
+                    >
+                        <MapPin size={16} /> View Map
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 px-4 py-2 rounded-lg transition text-sm font-medium border border-red-600/30"
+                    >
+                        <LogOut size={16} /> Logout
                     </button>
                 </div>
-            </nav>
+            </header>
 
-            <main className="p-4 max-w-7xl mx-auto">
+            <main className="max-w-7xl mx-auto">
                 <h1 className="text-2xl font-bold mb-6">Active Complaints ({complaints.length})</h1>
 
                 {loading ? (
@@ -90,8 +100,8 @@ export default function DashboardPage() {
                                         {new Date(complaint.created_at).toLocaleDateString()}
                                     </div>
                                     <div className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded backdrop-blur-sm ${complaint.progress === 'Resolved' ? 'bg-green-600' :
-                                            complaint.progress === 'Work in Progress' ? 'bg-yellow-600' :
-                                                complaint.progress === 'Closed' ? 'bg-gray-600' : 'bg-red-600'
+                                        complaint.progress === 'Work in Progress' ? 'bg-yellow-600' :
+                                            complaint.progress === 'Closed' ? 'bg-gray-600' : 'bg-red-600'
                                         }`}>
                                         {complaint.progress || 'Pending'}
                                     </div>
