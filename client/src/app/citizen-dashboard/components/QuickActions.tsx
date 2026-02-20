@@ -19,7 +19,7 @@ const actions = [
         color: "bg-blue-50 text-blue-600 border border-blue-100",
         hoverColor: "hover:bg-blue-100",
         shadow: "shadow-blue-50",
-        href: "/citizen-dashboard?view=my-complaints",
+        href: "/citizen-dashboard/complaints",
     },
     {
         icon: MapIcon,
@@ -27,7 +27,7 @@ const actions = [
         color: "bg-white text-gray-700 border border-gray-100",
         hoverColor: "hover:bg-gray-50",
         shadow: "shadow-gray-100",
-        href: "/dashboard/map",
+        href: "/map",
     },
     {
         icon: Bell,
