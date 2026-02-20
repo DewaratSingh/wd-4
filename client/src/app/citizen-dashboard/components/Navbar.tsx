@@ -18,7 +18,7 @@ export default function Navbar() {
     useEffect(() => {
         const currentUser = localStorage.getItem('currentUser');
         const municipalUser = localStorage.getItem('municipalUser');
-        
+
         if (currentUser) {
             setUser(JSON.parse(currentUser));
         } else if (municipalUser) {
@@ -99,9 +99,9 @@ export default function Navbar() {
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center gap-8 ml-10">
                         {navLinks.map((link) => (
-                            <NavLink 
+                            <NavLink
                                 key={link.href}
-                                href={link.href} 
+                                href={link.href}
                                 active={pathname === link.href || pathname?.startsWith(link.href)}
                             >
                                 {link.label}
@@ -122,7 +122,7 @@ export default function Navbar() {
                         </div>
 
                         {/* Notifications */}
-                        <Link 
+                        <Link
                             href="/notifications"
                             className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
                         >
@@ -229,11 +229,10 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                    pathname === link.href || pathname?.startsWith(link.href)
+                                className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${pathname === link.href || pathname?.startsWith(link.href)
                                         ? 'bg-blue-50 text-blue-600'
                                         : 'text-gray-600 hover:bg-gray-50'
-                                }`}
+                                    }`}
                             >
                                 {link.label}
                             </Link>
