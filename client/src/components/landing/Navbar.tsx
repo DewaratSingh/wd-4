@@ -78,7 +78,7 @@ export const Navbar = () => {
                     <Link href="/signin" className="hidden md:block px-5 py-2 text-sm font-medium text-light-text-heading border border-light-border rounded-full hover:bg-slate-50 transition-colors">
                         Admin Login
                     </Link>
-                    <Link href="/complaint" className="relative px-6 py-2.5 text-sm font-bold text-white bg-linear-to-r from-vibrant-orange to-orange-500 rounded-full shadow-lg shadow-vibrant-orange/20 hover:shadow-vibrant-orange/40 hover:scale-105 transition-all duration-300 group overflow-hidden">
+                    <Link href="/user/login" className="relative px-6 py-2.5 text-sm font-bold text-white bg-linear-to-r from-vibrant-orange to-orange-500 rounded-full shadow-lg shadow-vibrant-orange/20 hover:shadow-vibrant-orange/40 hover:scale-105 transition-all duration-300 group overflow-hidden">
                         <span className="relative z-10 flex items-center gap-2">
                             Report an Issue
                             <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
