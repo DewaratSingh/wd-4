@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader } from 'lucide-react';
+import Sidebar from '../components/Sidebar';
+import DashboardHeader from '../components/DashboardHeader';
 
 // Dynamically import MapComponent to avoid SSR issues with Leaflet
 const MapComponent = dynamic(() => import('../../../components/MapComponent'), {
@@ -73,29 +75,25 @@ export default function MapPage() {
     };
 
     return (
-        <div className="h-screen w-screen flex flex-col bg-gray-900">
-            {/* Header */}
-            <div className="absolute top-4 left-4 z-[1000] flex gap-4">
-                <button
-                    onClick={() => router.push('/dashboard')}
-                    className="bg-white/90 text-black px-4 py-2 rounded shadow-lg flex items-center gap-2 hover:bg-white text-sm font-bold"
-                >
-                    <ArrowLeft size={16} /> Dashboard
-                </button>
-                <div className="bg-black/80 text-white px-4 py-2 rounded shadow-lg backdrop-blur text-sm">
-                    {complaints.length} Complaints Found
-                </div>
+        <div className="flex h-screen bg-gray-50 overflow-hidden">
+            <Sidebar />
+            <div className="flex-1 flex flex-col min-h-0 ml-[230px]">
+                <DashboardHeader title="Live Complaint Map" />
+                <main className="flex-1 relative">
+                    {/* Map */}
+                    {userLocation ? (
+                        <MapComponent complaints={complaints} center={userLocation} />
+                    ) : (
+                        <div className="flex-1 flex items-center justify-center text-gray-500 h-full">
+                            <Loader className="animate-spin" />
+                            <span className="ml-2">Locating...</span>
+                        </div>
+                    )}
+                    <div className="absolute top-4 right-4 z-[400] bg-white text-black px-4 py-2 rounded shadow-lg text-sm font-bold border border-gray-200">
+                        {complaints.length} Complaints Found
+                    </div>
+                </main>
             </div>
-
-            {/* Map */}
-            {userLocation ? (
-                <MapComponent complaints={complaints} center={userLocation} />
-            ) : (
-                <div className="flex-1 flex items-center justify-center text-white">
-                    <Loader className="animate-spin" />
-                    <span className="ml-2">Locating...</span>
-                </div>
-            )}
         </div>
     );
 }

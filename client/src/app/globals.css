@@ -48,6 +48,18 @@
   --color-light-card-bg: #FFFFFF;
   --color-light-border: #E2E8F0;
   /* Slate-200 */
+
+  --animate-marquee: marquee 25s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-50%);
+    }
+  }
 }
 
 body {

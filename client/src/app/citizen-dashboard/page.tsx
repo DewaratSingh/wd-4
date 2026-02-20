@@ -104,7 +104,8 @@ export default function CitizenDashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: 0.45 }}
                         >
-                            <IssuesNearYou />
+                            <IssuesNearYou complaints={complaints} />
+
                         </motion.div>
 
                         <motion.div
