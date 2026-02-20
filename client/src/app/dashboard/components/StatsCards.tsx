@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import {
     TrendingUp,
     TrendingDown,
@@ -10,7 +10,7 @@ import {
     FileText,
 } from "lucide-react";
 
-const cardVariants = {
+const cardVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
         opacity: 1,
@@ -150,7 +150,7 @@ function ProgressBar({ percent }: { percent: number }) {
             <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${percent}%` }}
-                transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
+                transition={{ duration: 1.2, delay: 0.5 }}
                 className="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"
             />
         </div>
@@ -167,7 +167,7 @@ function Waveform() {
                     key={i}
                     initial={{ scaleY: 0 }}
                     animate={{ scaleY: 1 }}
-                    transition={{ delay: 0.3 + i * 0.06, duration: 0.4, ease: "easeOut" }}
+                    transition={{ delay: 0.3 + i * 0.06, duration: 0.4 }}
                     style={{ height: h, originY: 1 }}
                     className="w-1.5 bg-gradient-to-t from-purple-500 to-indigo-400 rounded-sm"
                 />

@@ -86,14 +86,20 @@ export default function Sidebar() {
                   <li key={item.label}>
                     <motion.button
                       whileTap={{ scale: 0.97 }}
-                      onClick={() => setActiveItem(item.label)}
+                      onClick={() => {
+                        setActiveItem(item.label);
+                        if (item.label === "Live Map") {
+                          window.location.href = "/dashboard/map"; // Using window.location for simple force nav or router.push
+                        } else if (item.label === "Dashboard") {
+                          window.location.href = "/dashboard";
+                        }
+                      }}
                       onMouseEnter={() => setHovered(item.label)}
                       onMouseLeave={() => setHovered(null)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative group cursor-pointer ${
-                        isActive
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative group cursor-pointer ${isActive
                           ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
                           : "text-gray-400 hover:text-white hover:bg-white/5"
-                      }`}
+                        }`}
                     >
                       {isActive && (
                         <motion.div
@@ -107,9 +113,8 @@ export default function Sidebar() {
                         />
                       )}
                       <item.icon
-                        className={`w-4 h-4 relative z-10 flex-shrink-0 ${
-                          isActive ? "text-white" : ""
-                        }`}
+                        className={`w-4 h-4 relative z-10 flex-shrink-0 ${isActive ? "text-white" : ""
+                          }`}
                       />
                       <span className="relative z-10 flex-1 text-left text-[13px]">
                         {item.label}
@@ -118,11 +123,10 @@ export default function Sidebar() {
                         <motion.span
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                            isActive
+                          className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive
                               ? "bg-white/20 text-white"
                               : "bg-indigo-500/20 text-indigo-400"
-                          }`}
+                            }`}
                         >
                           {item.badge}
                         </motion.span>

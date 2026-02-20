@@ -66,11 +66,12 @@ export default function CitizenDashboard() {
                                 </motion.div>
 
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.4, delay: 0.35 }}
+                                    className="h-[300px]"
                                 >
-                                    <IssuesNearYou />
+                                    <MonthlyOverview />
                                 </motion.div>
                             </div>
 
@@ -85,14 +86,7 @@ export default function CitizenDashboard() {
                                     <WardMap />
                                 </motion.div>
 
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.3 }}
-                                    className="h-[300px]"
-                                >
-                                    <MonthlyOverview />
-                                </motion.div>
+
 
                                 <motion.div
                                     initial={{ opacity: 0, x: 20 }}
@@ -104,6 +98,14 @@ export default function CitizenDashboard() {
                             </div>
 
                         </div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.45 }}
+                        >
+                            <IssuesNearYou />
+                        </motion.div>
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

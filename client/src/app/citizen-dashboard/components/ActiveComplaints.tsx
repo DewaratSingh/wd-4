@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ArrowRight, Clock } from "lucide-react";
+import { AlertTriangle, ArrowRight, Clock, Trash2 } from "lucide-react";
 
 export default function ActiveComplaints() {
     return (
@@ -41,6 +41,38 @@ export default function ActiveComplaints() {
                     </div>
                     <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" /> Estimated: 2 Days
+                    </div>
+                </div>
+            </div>
+
+            {/* Complaint Item 2 - Garbage */}
+            <div className="border border-l-4 border-l-gray-300 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer bg-white group mt-4">
+                <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 bg-green-50 text-green-500 rounded-xl group-hover:scale-110 transition-transform">
+                            <Trash2 className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-gray-900 mb-1 line-clamp-1">
+                                Garbage not collected for 4 days
+                            </h4>
+                            <p className="text-xs text-gray-500 mb-2">
+                                Reported yesterday • Ward 14 • Ticket #8901
+                            </p>
+                            <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-[10px] font-bold rounded uppercase tracking-wider">
+                                Submitted
+                            </span>
+                        </div>
+                    </div>
+                    {/* No High Priority Badge for this one based on image, or maybe "Normal"? Image doesn't show one clearly, but let's leave it out or add a 'Medium' if needed. The previous one had 'High'. Leaving blank for now as image implies standard. */}
+                </div>
+
+                <div className="mt-4 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100 pt-3">
+                    <div className="w-2/3 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-gray-400 w-1/5 rounded-full"></div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Assigning Team...
                     </div>
                 </div>
             </div>
