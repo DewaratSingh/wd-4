@@ -69,7 +69,7 @@ export default function CitizenDashboard() {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.4, delay: 0.35 }}
-                                    className="h-[300px]"
+                                    className="h-[360px]"
                                 >
                                     <MonthlyOverview />
                                 </motion.div>
@@ -81,7 +81,7 @@ export default function CitizenDashboard() {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.4, delay: 0.2 }}
-                                    className="h-[300px]"
+                                    className="h-[420px]"
                                 >
                                     <WardMap complaints={[]} />
                                 </motion.div>
