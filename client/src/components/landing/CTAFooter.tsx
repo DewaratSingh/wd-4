@@ -48,23 +48,23 @@ const CTACard = ({
             transition={{ duration: 0.7, delay }}
             whileHover={{ y: -8, scale: 1.01 }}
             className={`relative flex-1 max-w-md bg-white rounded-3xl p-8 border shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group ${isOrange
-                    ? "border-vibrant-orange/20 hover:border-vibrant-orange/40 hover:shadow-vibrant-orange/10"
-                    : "border-electric-indigo/20 hover:border-electric-indigo/40 hover:shadow-electric-indigo/10"
+                ? "border-vibrant-orange/20 hover:border-vibrant-orange/40 hover:shadow-vibrant-orange/10"
+                : "border-electric-indigo/20 hover:border-electric-indigo/40 hover:shadow-electric-indigo/10"
                 }`}
         >
             {/* Top accent bar */}
             <div
                 className={`absolute top-0 left-0 right-0 h-1 rounded-t-3xl transition-all duration-500 ${isOrange
-                        ? "bg-gradient-to-r from-vibrant-orange to-amber-400"
-                        : "bg-gradient-to-r from-electric-indigo to-violet-500"
+                    ? "bg-gradient-to-r from-vibrant-orange to-amber-400"
+                    : "bg-gradient-to-r from-electric-indigo to-violet-500"
                     }`}
             />
 
             {/* Subtle inner glow on hover */}
             <div
                 className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-3xl ${isOrange
-                        ? "bg-gradient-to-br from-vibrant-orange/4 via-transparent to-transparent"
-                        : "bg-gradient-to-br from-electric-indigo/4 via-transparent to-transparent"
+                    ? "bg-gradient-to-br from-vibrant-orange/4 via-transparent to-transparent"
+                    : "bg-gradient-to-br from-electric-indigo/4 via-transparent to-transparent"
                     }`}
             />
 
@@ -95,8 +95,8 @@ const CTACard = ({
 
                 <button
                     className={`group/btn w-full flex items-center justify-center gap-2 h-[52px] px-6 rounded-full font-bold text-sm transition-all duration-300 ${isOrange
-                            ? "bg-vibrant-orange text-white shadow-lg shadow-vibrant-orange/25 hover:shadow-vibrant-orange/40 hover:scale-[1.02]"
-                            : "bg-electric-indigo text-white shadow-lg shadow-electric-indigo/25 hover:shadow-electric-indigo/40 hover:scale-[1.02]"
+                        ? "bg-vibrant-orange text-white shadow-lg shadow-vibrant-orange/25 hover:shadow-vibrant-orange/40 hover:scale-[1.02]"
+                        : "bg-electric-indigo text-white shadow-lg shadow-electric-indigo/25 hover:shadow-electric-indigo/40 hover:scale-[1.02]"
                         }`}
                 >
                     {btnLabel}
@@ -125,8 +125,8 @@ const FooterLinkGroup = ({
                     <a
                         href="#"
                         className={`text-sm transition-colors duration-200 ${l.dimmed
-                                ? "text-slate-400 cursor-not-allowed hover:text-slate-400"
-                                : "text-light-text-body hover:text-vibrant-orange"
+                            ? "text-slate-400 cursor-not-allowed hover:text-slate-400"
+                            : "text-light-text-body hover:text-vibrant-orange"
                             }`}
                     >
                         {l.label}
@@ -278,7 +278,7 @@ export const CTAFooter = () => {
                             sub="Report your first civic issue in under 60 seconds. No bureaucracy, no waiting — just results."
                             btnLabel="Start Reporting"
                             accent="orange"
-                            footerNote="No signup needed to browse issues"
+                            footerNote="signup needed to browse issues"
                             perks={[
                                 "Real-time complaint tracking",
                                 "Photo & location upload",
