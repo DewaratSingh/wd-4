@@ -27,45 +27,63 @@ export default function HeroBanner({ user }: HeroBannerProps) {
     };
 
     useEffect(() => {
-        if (user?.latitude && user?.longitude) {
-            const fetchData = async () => {
-                setLoading(true);
-                const apiKey = 'ae888bf8ac24f29ebb6343a5011e233a';
-                try {
-                    // Fetch Weather
-                    const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${user.latitude}&lon=${user.longitude}&units=metric&appid=${apiKey}`);
-                    const weatherData = await weatherRes.json();
-                    console.log(weatherData);
+        const fetchWeatherData = async (lat: number, lon: number) => {
+            setLoading(true);
+            const apiKey = 'ae888bf8ac24f29ebb6343a5011e233a';
+            try {
+                // Fetch Weather
+                const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
+                const weatherData = await weatherRes.json();
 
-                    if (weatherData.cod === 200) {
-                        setWeather({
-                            temp: Math.round(weatherData.main.temp),
-                            condition: weatherData.weather[0].main,
-                            location: weatherData.name
-                        });
-                    }
-
-                    // Fetch AQI
-                    const aqiRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${user.latitude}&lon=${user.longitude}&appid=${apiKey}`);
-                    const aqiData = await aqiRes.json();
-
-                    if (aqiData.list?.[0]) {
-                        const val = aqiData.list[0].main.aqi;
-                        const info = getAqiLabel(val);
-                        setAqi({
-                            value: val,
-                            label: info.text,
-                            color: info.color
-                        });
-                    }
-                } catch (error) {
-                    console.error("Fetch error:", error);
-                } finally {
-                    setLoading(false);
+                if (weatherData.cod === 200) {
+                    setWeather({
+                        temp: Math.round(weatherData.main.temp),
+                        condition: weatherData.weather[0].main,
+                        location: weatherData.name
+                    });
                 }
-            };
 
-            fetchData();
+                // Fetch AQI
+                const aqiRes = await fetch(`https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`);
+                const aqiData = await aqiRes.json();
+
+                if (aqiData.list?.[0]) {
+                    const val = aqiData.list[0].main.aqi;
+                    const info = getAqiLabel(val);
+                    setAqi({
+                        value: val,
+                        label: info.text,
+                        color: info.color
+                    });
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Try to get user from props or localStorage
+        let activeLat = user?.latitude;
+        let activeLon = user?.longitude;
+
+        if (!activeLat || !activeLon) {
+            const storedUser = localStorage.getItem('currentUser') || localStorage.getItem('municipalUser');
+            if (storedUser) {
+                const parsed = JSON.parse(storedUser);
+                activeLat = parsed.latitude;
+                activeLon = parsed.longitude;
+            }
+        }
+
+        if (activeLat && activeLon) {
+            fetchWeatherData(activeLat, activeLon);
+        } else {
+            // Fallback to Browser Geolocation
+            navigator.geolocation.getCurrentPosition(
+                (pos) => fetchWeatherData(pos.coords.latitude, pos.coords.longitude),
+                () => fetchWeatherData(28.6139, 77.2090) // Default to New Delhi
+            );
         }
     }, [user?.latitude, user?.longitude]);
 

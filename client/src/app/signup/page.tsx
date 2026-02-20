@@ -12,8 +12,11 @@ export default function SignupPage() {
         name: '',
         email: '',
         password: '',
-        municipal_name: '', // Optional for now, assuming admin registration
-        phone: '' // Optional
+        municipal_name: '',
+        phone: '',
+        latitude: 28.6139, // Default Delhi
+        longitude: 77.2090,
+        radius: 10
     });
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');

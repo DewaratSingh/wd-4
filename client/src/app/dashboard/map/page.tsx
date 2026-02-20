@@ -46,6 +46,8 @@ export default function MapPage() {
         }
 
         fetchComplaints();
+        const interval = setInterval(fetchComplaints, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const fetchComplaints = async () => {

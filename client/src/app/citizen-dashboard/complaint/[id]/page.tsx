@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import JourneyTimeline from '../../components/JourneyTimeline';
 import { motion } from 'framer-motion';
 
 // ─── Status helpers ─────────────────────────────────────────────────────────
@@ -253,6 +254,9 @@ export default function CitizenComplaintDetailPage() {
                                 </div>
                             </motion.div>
                         </div>
+
+                        {/* Citizen Journey Timeline */}
+                        <JourneyTimeline complaint={complaint} />
 
                         {/* ── RESOLUTION CARD ─── */}
                         {(complaint.resolved_text || complaint.resolved_image_url) && (

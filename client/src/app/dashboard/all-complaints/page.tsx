@@ -13,6 +13,8 @@ export default function AllComplaintsPage() {
 
     useEffect(() => {
         fetchComplaints();
+        const interval = setInterval(fetchComplaints, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const fetchComplaints = async () => {
@@ -84,6 +86,7 @@ export default function AllComplaintsPage() {
                                         <tr>
                                             <th className="px-6 py-3">ID</th>
                                             <th className="px-6 py-3">Date</th>
+                                            <th className="px-6 py-3">Category/Dept</th>
                                             <th className="px-6 py-3">Description</th>
                                             <th className="px-6 py-3">Status</th>
                                             <th className="px-6 py-3 text-right">Actions</th>
@@ -93,9 +96,17 @@ export default function AllComplaintsPage() {
                                         {complaints.map((complaint) => (
                                             <tr key={complaint.id} className="hover:bg-gray-50 transition-colors">
                                                 <td className="px-6 py-4 font-mono text-xs text-gray-500">#{complaint.id}</td>
-                                                <td className="px-6 py-4 text-gray-600 flex items-center gap-2">
-                                                    <Calendar size={14} className="text-gray-400" />
-                                                    {formatDate(complaint.created_at)}
+                                                <td className="px-6 py-4 text-gray-600 flex flex-col justify-center">
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar size={14} className="text-gray-400" />
+                                                        {formatDate(complaint.created_at)}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold text-indigo-600 uppercase tracking-tight">{complaint.category || 'Other'}</span>
+                                                        <span className="text-[10px] text-gray-500">{complaint.department || 'General Admin'}</span>
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="max-w-xs truncate text-gray-800 font-medium" title={complaint.notes}>

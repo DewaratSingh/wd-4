@@ -29,8 +29,11 @@ const initDb = async () => {
                 resolved_latitude DECIMAL(10, 8),
                 resolved_longitude DECIMAL(11, 8),
                 user_id INTEGER,
-                upvotes INTEGER DEFAULT 0,
-                priority_score INTEGER DEFAULT 0,
+                upvotes INT DEFAULT 0,
+                priority_score DECIMAL(5,2) DEFAULT 0,
+                accepted_at TIMESTAMP,
+                in_progress_at TIMESTAMP,
+                resolved_at TIMESTAMP,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             
@@ -56,10 +59,19 @@ const initDb = async () => {
                     ALTER TABLE complaints ADD COLUMN user_id INTEGER;
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='upvotes') THEN
-                    ALTER TABLE complaints ADD COLUMN upvotes INTEGER DEFAULT 0;
+                    ALTER TABLE complaints ADD COLUMN upvotes INT DEFAULT 0;
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='priority_score') THEN
-                    ALTER TABLE complaints ADD COLUMN priority_score INTEGER DEFAULT 0;
+                    ALTER TABLE complaints ADD COLUMN priority_score DECIMAL(5,2) DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='accepted_at') THEN
+                    ALTER TABLE complaints ADD COLUMN accepted_at TIMESTAMP;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='in_progress_at') THEN
+                    ALTER TABLE complaints ADD COLUMN in_progress_at TIMESTAMP;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='resolved_at') THEN
+                    ALTER TABLE complaints ADD COLUMN resolved_at TIMESTAMP;
                 END IF;
             END$$;
 
