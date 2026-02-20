@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 const menuItems = [
     { icon: Home, label: "Home", href: "/citizen-dashboard" },
     { icon: ClipboardList, label: "My Complaints", href: "/citizen-dashboard?view=my-complaints" },
-    { icon: MapIcon, label: "City Map", href: "/dashboard/map" },
+    { icon: MapIcon, label: "City Map", href: "/map" },
     { icon: Users, label: "Community", href: "/community" },
     { icon: Bell, label: "Notifications", href: "/notifications" },
 ];

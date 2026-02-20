@@ -21,7 +21,7 @@ const navItems = [
     section: "MAIN MENU",
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", badge: null },
-      { icon: Map, label: "Live Map", href: "/dashboard/map", badge: null },
+      { icon: Map, label: "Live Map", href: "/map", badge: null },
       { icon: FileText, label: "All Complaints", href: "/dashboard/all-complaints", badge: 12 },
       { icon: Users, label: "Citizens", href: "/dashboard/citizens", badge: null },
       { icon: BarChart2, label: "Analytics", href: "/dashboard/analytics", badge: null },

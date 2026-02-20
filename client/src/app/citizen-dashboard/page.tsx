@@ -11,9 +11,6 @@ import WardMap from "./components/WardMap";
 import ActivityHeatmap from "./components/ActivityHeatmap";
 import { CategoryDistribution, ResolutionTrend } from "./components/AnalyticsCharts";
 import EmergencySection from "./components/EmergencySection";
-import QuickServices from "./components/QuickServices";
-import IssuesNearYou from "./components/IssuesNearYou";
-import CommunityPriority from "./components/CommunityPriority";
 import WeatherCard from "./components/WeatherCard";
 import { motion } from "framer-motion";
 export default function CitizenDashboard() {
@@ -68,11 +65,11 @@ export default function CitizenDashboard() {
                             <QuickActions />
                         </motion.div>
 
-                        {/* Main Content Grid */}
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        {/* Main Content */}
+                        <div className="flex flex-col xl:flex-row gap-6 items-start">
 
                             {/* Left Column (Stats + Complaints) */}
-                            <div className="xl:col-span-2 space-y-6">
+                            <div className="flex-1 min-w-0 space-y-6">
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -98,7 +95,6 @@ export default function CitizenDashboard() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.4, delay: 0.35 }}
-                                        className="h-[350px]"
                                     >
                                         <ActivityHeatmap />
                                     </motion.div>
@@ -115,7 +111,7 @@ export default function CitizenDashboard() {
                             </div>
 
                             {/* Right Column (Map + Analytics) */}
-                            <div className="space-y-6">
+                            <div className="w-full xl:w-[340px] shrink-0 space-y-6">
                                 <motion.div
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -142,32 +138,9 @@ export default function CitizenDashboard() {
                                     <CategoryDistribution />
                                 </motion.div>
 
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.35 }}
-                                >
-                                    <CommunityPriority />
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.4 }}
-                                >
-                                    <QuickServices />
-                                </motion.div>
                             </div>
 
                         </div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.45 }}
-                        >
-                            <IssuesNearYou complaints={complaints} />
-                        </motion.div>
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

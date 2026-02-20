@@ -51,6 +51,8 @@ export default function PublicMapPage() {
             setCenter({ lat: 28.6139, lng: 77.2090 });
         }
         fetchComplaints();
+        const interval = setInterval(fetchComplaints, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const fetchComplaints = async () => {
