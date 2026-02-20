@@ -25,7 +25,11 @@ export default function CommunityPriority() {
                 setLoading(false);
             }
         };
+
         fetchHotTopics();
+
+        window.addEventListener('refresh-data', fetchHotTopics);
+        return () => window.removeEventListener('refresh-data', fetchHotTopics);
     }, []);
 
     if (loading) return <div className="h-40 flex items-center justify-center text-slate-400 text-sm">Loading Community Buzz...</div>;

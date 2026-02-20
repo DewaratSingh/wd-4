@@ -1,24 +1,34 @@
-"use client";
-
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function ActivityHeatmap() {
-    // Generate mock data for the last 14 days
-    const heatmapData = useMemo(() => {
-        const data = [];
-        const today = new Date();
-        for (let i = 13; i >= 0; i--) {
-            const date = new Date(today);
-            date.setDate(today.getDate() - i);
-            // Higher activity on some days for visual variety
-            const activity = Math.floor(Math.random() * 5);
-            data.push({
-                date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                level: activity,
-            });
+    const [heatmapData, setHeatmapData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchData = async () => {
+        try {
+            const res = await fetch('http://localhost:3000/api/stats');
+            const data = await res.json();
+            if (data.success) {
+                // Map the trend data to heatmap format
+                const formatted = data.trend.map((d: any) => ({
+                    date: new Date(d.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    level: Math.min(Math.ceil(d.count / 2), 4), // Scale volume to levels 0-4
+                    count: d.count
+                })).slice(-14); // Last 14 days
+                setHeatmapData(formatted);
+            }
+        } catch (err) {
+            console.error("Heatmap fetch error:", err);
+        } finally {
+            setLoading(false);
         }
-        return data;
+    };
+
+    useEffect(() => {
+        fetchData();
+        window.addEventListener('refresh-data', fetchData);
+        return () => window.removeEventListener('refresh-data', fetchData);
     }, []);
 
     const getColor = (level: number) => {
@@ -28,6 +38,8 @@ export default function ActivityHeatmap() {
         if (level === 3) return "bg-blue-500";
         return "bg-blue-700";
     };
+
+    if (loading) return <div className="h-40 flex items-center justify-center text-gray-400 text-sm">Loading activity...</div>;
 
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 h-full flex flex-col">
@@ -47,7 +59,7 @@ export default function ActivityHeatmap() {
                             className={`w-10 h-10 xl:w-12 xl:h-12 rounded-lg ${getColor(day.level)} transition-all duration-300 hover:ring-2 hover:ring-blue-400 hover:ring-offset-2 cursor-pointer`}
                         />
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                            {day.date}: {day.level} issues
+                            {day.date}: {day.count} reports
                         </div>
                     </motion.div>
                 ))}

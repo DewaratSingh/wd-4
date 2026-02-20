@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import HeroBanner from "./components/HeroBanner";
@@ -15,8 +16,30 @@ import IssuesNearYou from "./components/IssuesNearYou";
 import CommunityPriority from "./components/CommunityPriority";
 import WeatherCard from "./components/WeatherCard";
 import { motion } from "framer-motion";
-
 export default function CitizenDashboard() {
+    const [complaints, setComplaints] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchComplaints = async () => {
+        try {
+            const res = await fetch('http://localhost:3000/api/all-complaints');
+            const data = await res.json();
+            if (data.success) {
+                setComplaints(data.complaints);
+            }
+        } catch (err) {
+            console.error("Dashboard fetch error:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchComplaints();
+        window.addEventListener('refresh-data', fetchComplaints);
+        return () => window.removeEventListener('refresh-data', fetchComplaints);
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             <Navbar />
@@ -55,10 +78,12 @@ export default function CitizenDashboard() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.4, delay: 0.2 }}
                                 >
-                                    <StatsBar stats={{ resolved: 0, inProgress: 0, newToday: 0 }} />
+                                    <StatsBar stats={{
+                                        resolved: complaints.filter(c => c.progress === 'Resolved').length,
+                                        inProgress: complaints.filter(c => c.progress === 'Work in Progress' || c.progress === 'Accepted').length,
+                                        newToday: complaints.filter(c => new Date(c.created_at).toDateString() === new Date().toDateString()).length
+                                    }} />
                                 </motion.div>
-
-
 
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
@@ -97,7 +122,7 @@ export default function CitizenDashboard() {
                                     transition={{ duration: 0.4, delay: 0.2 }}
                                     className="h-[420px]"
                                 >
-                                    <WardMap complaints={[]} />
+                                    <WardMap complaints={complaints} />
                                 </motion.div>
 
                                 <motion.div
@@ -141,8 +166,7 @@ export default function CitizenDashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: 0.45 }}
                         >
-                            <IssuesNearYou complaints={[]} />
-
+                            <IssuesNearYou complaints={complaints} />
                         </motion.div>
 
                         <motion.div

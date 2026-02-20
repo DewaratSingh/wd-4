@@ -40,7 +40,11 @@ export default function CivicPriorityIndex() {
                 setLoading(false);
             }
         };
+
         fetchData();
+
+        window.addEventListener('refresh-data', fetchData);
+        return () => window.removeEventListener('refresh-data', fetchData);
     }, []);
 
     if (loading) return <div className="h-full flex items-center justify-center text-slate-400 text-sm">Loading Priority Index...</div>;
@@ -122,8 +126,8 @@ export default function CivicPriorityIndex() {
                                 >
                                     <td className="px-4 py-3">
                                         <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black ${idx === 0 ? 'bg-red-100 text-red-600' :
-                                                idx === 1 ? 'bg-orange-100 text-orange-600' :
-                                                    'bg-slate-100 text-slate-600'
+                                            idx === 1 ? 'bg-orange-100 text-orange-600' :
+                                                'bg-slate-100 text-slate-600'
                                             }`}>
                                             #{idx + 1}
                                         </span>
