@@ -92,13 +92,15 @@ export default function Sidebar() {
                           window.location.href = "/dashboard/map"; // Using window.location for simple force nav or router.push
                         } else if (item.label === "Dashboard") {
                           window.location.href = "/dashboard";
+                        } else if (item.label === "All Complaints") {
+                          window.location.href = "/dashboard/all-complaints";
                         }
                       }}
                       onMouseEnter={() => setHovered(item.label)}
                       onMouseLeave={() => setHovered(null)}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative group cursor-pointer ${isActive
-                          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
-                          : "text-gray-400 hover:text-white hover:bg-white/5"
+                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                        : "text-gray-400 hover:text-white hover:bg-white/5"
                         }`}
                     >
                       {isActive && (
@@ -124,8 +126,8 @@ export default function Sidebar() {
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           className={`relative z-10 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isActive
-                              ? "bg-white/20 text-white"
-                              : "bg-indigo-500/20 text-indigo-400"
+                            ? "bg-white/20 text-white"
+                            : "bg-indigo-500/20 text-indigo-400"
                             }`}
                         >
                           {item.badge}

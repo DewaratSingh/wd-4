@@ -59,29 +59,27 @@ export default function StatusDonutChart() {
             <div className="flex-1 flex flex-col items-center">
                 {/* Donut Chart */}
                 <div className="relative w-[200px] h-[200px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={statusData}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={62}
-                                outerRadius={90}
-                                paddingAngle={2}
-                                dataKey="value"
-                                startAngle={90}
-                                endAngle={-270}
-                                isAnimationActive={true}
-                                animationBegin={200}
-                                animationDuration={1200}
-                            >
-                                {statusData.map((entry, i) => (
-                                    <Cell key={i} fill={entry.color} stroke="white" strokeWidth={2} />
-                                ))}
-                            </Pie>
-                            <Tooltip content={<CustomTooltip />} />
-                        </PieChart>
-                    </ResponsiveContainer>
+                    <PieChart width={200} height={200}>
+                        <Pie
+                            data={statusData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={62}
+                            outerRadius={90}
+                            paddingAngle={2}
+                            dataKey="value"
+                            startAngle={90}
+                            endAngle={-270}
+                            isAnimationActive={true}
+                            animationBegin={200}
+                            animationDuration={1200}
+                        >
+                            {statusData.map((entry, i) => (
+                                <Cell key={i} fill={entry.color} stroke="white" strokeWidth={2} />
+                            ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                    </PieChart>
 
                     {/* Center label */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">

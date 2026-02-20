@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Search, Bell, HelpCircle, Command } from "lucide-react";
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ title }: { title?: string }) {
     return (
         <motion.header
             initial={{ opacity: 0, y: -16 }}
@@ -14,7 +14,7 @@ export default function DashboardHeader() {
             {/* Greeting */}
             <div>
                 <h2 className="text-gray-900 font-semibold text-lg leading-tight">
-                    Good Morning, Suresh 👋
+                    {title || "Good Morning, Suresh 👋"}
                 </h2>
             </div>
 
