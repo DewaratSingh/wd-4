@@ -12,6 +12,7 @@ export default function ActiveComplaints() {
                 </button>
             </div>
 
+            {/* Complaint Item 1 - Pothole */}
             <div className="border border-l-4 border-l-amber-500 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer bg-white group">
                 <div className="flex justify-between items-start mb-2">
                     <div className="flex items-start gap-4">
@@ -64,7 +65,6 @@ export default function ActiveComplaints() {
                             </span>
                         </div>
                     </div>
-                    {/* No High Priority Badge for this one based on image, or maybe "Normal"? Image doesn't show one clearly, but let's leave it out or add a 'Medium' if needed. The previous one had 'High'. Leaving blank for now as image implies standard. */}
                 </div>
 
                 <div className="mt-4 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100 pt-3">

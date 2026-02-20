@@ -52,7 +52,7 @@ export default function CitizenDashboard() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.4, delay: 0.2 }}
                                 >
-                                    <StatsBar />
+                                    <StatsBar stats={{ resolved: 0, inProgress: 0, newToday: 0 }} />
                                 </motion.div>
 
 
@@ -83,7 +83,7 @@ export default function CitizenDashboard() {
                                     transition={{ duration: 0.4, delay: 0.2 }}
                                     className="h-[300px]"
                                 >
-                                    <WardMap />
+                                    <WardMap complaints={[]} />
                                 </motion.div>
 
 
@@ -104,7 +104,7 @@ export default function CitizenDashboard() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: 0.45 }}
                         >
-                            <IssuesNearYou complaints={complaints} />
+                            <IssuesNearYou complaints={[]} />
 
                         </motion.div>
 
