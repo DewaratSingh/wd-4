@@ -1,11 +1,7 @@
 @import "tailwindcss";
 
 :root {
-<<<<<<< HEAD
   --background: #f9fafb;
-=======
-  --background: #f3f4f6;
->>>>>>> af45f2dc685c148df5955ffcdead97eae206db81
   --foreground: #111827;
   --primary: #2563eb;
   --primary-foreground: #ffffff;
@@ -33,10 +29,10 @@
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
   --font-sans: var(--font-inter);
-<<<<<<< HEAD
   --font-mono: var(--font-geist-mono);
+
+  /* Custom Theme Colors */
   --color-navy: #050B1F;
-  /* Keep for dark mode if needed */
   --color-electric-indigo: #4F46E5;
   --color-vibrant-orange: #FF6B35;
   --color-success-emerald: #10B981;
@@ -52,14 +48,11 @@
   --color-light-card-bg: #FFFFFF;
   --color-light-border: #E2E8F0;
   /* Slate-200 */
-=======
->>>>>>> af45f2dc685c148df5955ffcdead97eae206db81
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-<<<<<<< HEAD
   font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -69,15 +62,6 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
-=======
-  font-family: var(--font-sans), sans-serif;
-  @apply antialiased;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
->>>>>>> af45f2dc685c148df5955ffcdead97eae206db81
 }
 
 ::-webkit-scrollbar-track {
@@ -85,18 +69,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-<<<<<<< HEAD
   background: #d1d5db;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
-=======
-  @apply bg-slate-200 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-slate-300;
->>>>>>> af45f2dc685c148df5955ffcdead97eae206db81
 }
