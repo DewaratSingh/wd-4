@@ -28,6 +28,7 @@ const initDb = async () => {
                 resolved_image_url TEXT,
                 resolved_latitude DECIMAL(10, 8),
                 resolved_longitude DECIMAL(11, 8),
+                user_id INTEGER,
                 upvotes INT DEFAULT 0,
                 priority_score DECIMAL(5,2) DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -50,6 +51,9 @@ const initDb = async () => {
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='resolved_longitude') THEN
                     ALTER TABLE complaints ADD COLUMN resolved_longitude DECIMAL(11, 8);
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='user_id') THEN
+                    ALTER TABLE complaints ADD COLUMN user_id INTEGER;
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='upvotes') THEN
                     ALTER TABLE complaints ADD COLUMN upvotes INT DEFAULT 0;
@@ -76,6 +80,7 @@ const initDb = async () => {
                 username VARCHAR(255) NOT NULL,
                 email VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
+                phone VARCHAR(20),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);

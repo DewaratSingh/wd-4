@@ -148,9 +148,21 @@ router.get('/all-complaints', async (req, res) => {
     }
 });
 
+// Get complaints for a specific user
+router.get('/user-complaints/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const result = await pool.query('SELECT * FROM complaints WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+        res.json({ success: true, complaints: result.rows });
+    } catch (err) {
+        console.error("Get user-complaints error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Submit a new complaint
 router.post('/complaint', upload.single('image'), async (req, res) => {
-    const { notes, phone, latitude, longitude } = req.body;
+    const { notes, phone, latitude, longitude, user_id } = req.body;
     const file = req.file;
 
     if (!file || !latitude || !longitude) {
@@ -172,8 +184,8 @@ router.post('/complaint', upload.single('image'), async (req, res) => {
         const { category, department } = getDepartmentAssignment(notes);
 
         const insertResult = await pool.query(
-            'INSERT INTO complaints (image_url, notes, phone, latitude, longitude, category, department) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [result.secure_url, notes, phone, latitude, longitude, category, department]
+            'INSERT INTO complaints (image_url, notes, phone, latitude, longitude, category, department, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [result.secure_url, notes, phone, latitude, longitude, category, department, user_id]
         );
 
         // Compute initial priority score

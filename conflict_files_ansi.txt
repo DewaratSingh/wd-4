@@ -1,7 +1,0 @@
-backend/index.js
-client/package-lock.json
-client/package.json
-client/src/app/citizen-dashboard/components/ActiveComplaints.tsx
-client/src/app/citizen-dashboard/page.tsx
-client/src/app/dashboard/complaint/[id]/page.tsx
-client/src/app/dashboard/page.tsx
