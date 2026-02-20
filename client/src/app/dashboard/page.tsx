@@ -12,32 +12,6 @@ import NeedsAttentionPanel from "./components/NeedsAttentionPanel";
 import WardPerformancePanel from "./components/WardPerformancePanel";
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const res = await fetch('http://localhost:3000/api/stats');
-                const data = await res.json();
-                if (data.success) {
-                    setStats(data.stats);
-                }
-            } catch (err) {
-                console.error("Failed to fetch stats:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
-
-    if (loading) {
-        return <div className="flex h-screen items-center justify-center bg-gray-50 text-gray-500">Loading dashboard...</div>;
-    }
-
     return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
             {/* Sidebar */}

@@ -154,8 +154,8 @@ export default function ComplaintDetailPage() {
         <button
             onClick={() => setProgress(status)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${progress === status
-                ? `bg-${color}-600 border-${color}-400 text-white ring-2 ring-${color}-400 ring-offset-2 ring-offset-gray-900`
-                : `bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700`
+                    ? `bg-${color}-600 border-${color}-400 text-white ring-2 ring-${color}-400 ring-offset-2 ring-offset-gray-900`
+                    : `bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700`
                 }`}
         >
             <Icon size={18} />
