@@ -7,7 +7,8 @@ import QuickActions from "./components/QuickActions";
 import StatsBar from "./components/StatsBar";
 import ActiveComplaints from "./components/ActiveComplaints";
 import WardMap from "./components/WardMap";
-import MonthlyOverview from "./components/MonthlyOverview";
+import ActivityHeatmap from "./components/ActivityHeatmap";
+import { CategoryDistribution, ResolutionTrend } from "./components/AnalyticsCharts";
 import EmergencySection from "./components/EmergencySection";
 import QuickServices from "./components/QuickServices";
 import IssuesNearYou from "./components/IssuesNearYou";
@@ -65,14 +66,25 @@ export default function CitizenDashboard() {
                                     <ActiveComplaints />
                                 </motion.div>
 
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.35 }}
-                                    className="h-[300px]"
-                                >
-                                    <MonthlyOverview />
-                                </motion.div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.4, delay: 0.35 }}
+                                        className="h-[350px]"
+                                    >
+                                        <ActivityHeatmap />
+                                    </motion.div>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.4, delay: 0.4 }}
+                                        className="h-[350px]"
+                                    >
+                                        <ResolutionTrend />
+                                    </motion.div>
+                                </div>
                             </div>
 
                             {/* Right Column (Map + Analytics) */}
@@ -86,7 +98,14 @@ export default function CitizenDashboard() {
                                     <WardMap complaints={[]} />
                                 </motion.div>
 
-
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.4, delay: 0.3 }}
+                                    className="h-[350px]"
+                                >
+                                    <CategoryDistribution />
+                                </motion.div>
 
                                 <motion.div
                                     initial={{ opacity: 0, x: 20 }}

@@ -7,6 +7,7 @@ router.post('/signup', async (req, res) => {
     const { name, email, password, municipal_name, latitude, longitude, radius } = req.body;
 
     if (!name || !email || !password || !latitude || !longitude || !radius) {
+        console.log("Signup failed: Missing fields", { name: !!name, email: !!email, password: !!password, latitude: !!latitude, longitude: !!longitude, radius: !!radius });
         return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -37,9 +38,11 @@ router.post('/signin', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
+            console.log(`Signin failed for ${email}: Invalid credentials`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
+        console.log(`Signin successful for ${email}`);
         res.json({ success: true, user: result.rows[0] });
     } catch (err) {
         console.error("Signin error:", err);
@@ -47,4 +50,54 @@ router.post('/signin', async (req, res) => {
     }
 });
 
+// ─── Citizen User Auth ───────────────────────────────────────────────────────
+
+router.post('/user/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO users (username, email, password) VALUES ($1, $2, $3)
+             RETURNING id, username, email, created_at`,
+            [username, email, password]
+        );
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error("User signup error:", err);
+        if (err.code === '23505') {
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.post('/user/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+    }
+
+    try {
+        const result = await pool.query(
+            `SELECT id, username, email, created_at FROM users WHERE email = $1 AND password = $2`,
+            [email, password]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid email or password' });
+        }
+
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error("User login error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 export default router;
+

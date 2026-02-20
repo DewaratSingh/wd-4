@@ -1,8 +1,11 @@
 'use client';
 
-import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, CircleMarker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useRouter } from 'next/navigation';
+import L from 'leaflet';
+import 'leaflet.heat';
 
 interface Complaint {
     id: string;
@@ -16,6 +19,39 @@ interface Complaint {
 interface MapComponentProps {
     complaints: Complaint[];
     center: { lat: number; lng: number };
+}
+
+// Custom Heatmap Layer component
+function HeatmapLayer({ complaints }: { complaints: Complaint[] }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (!map || complaints.length === 0) return;
+
+        const points: [number, number, number][] = complaints.map(c => [
+            Number(c.latitude),
+            Number(c.longitude),
+            0.5 // intensity
+        ]);
+
+        // @ts-ignore - leaflet.heat is not in @types/leaflet
+        const heatLayer = L.heatLayer(points, {
+            radius: 40,
+            blur: 25,
+            maxZoom: 17,
+            gradient: {
+                0.4: 'orange',
+                0.8: 'orangered',
+                1.0: 'red'
+            }
+        }).addTo(map);
+
+        return () => {
+            map.removeLayer(heatLayer);
+        };
+    }, [map, complaints]);
+
+    return null;
 }
 
 export default function MapComponent({ complaints, center }: MapComponentProps) {
@@ -42,16 +78,18 @@ export default function MapComponent({ complaints, center }: MapComponentProps) 
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
+            <HeatmapLayer complaints={complaints} />
+
             {complaints.map((complaint) => (
                 <CircleMarker
                     key={complaint.id}
                     center={[Number(complaint.latitude), Number(complaint.longitude)]}
-                    radius={10} // Fixed size marker
+                    radius={6} // Smaller markers to let heatmap show
                     pathOptions={{
-                        color: 'white', // White border for visibility
-                        weight: 2,
+                        color: 'white',
+                        weight: 1,
                         fillColor: getColor(complaint.progress),
-                        fillOpacity: 1
+                        fillOpacity: 0.8
                     }}
                     eventHandlers={{
                         click: () => {

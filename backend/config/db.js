@@ -28,6 +28,8 @@ const initDb = async () => {
                 resolved_image_url TEXT,
                 resolved_latitude DECIMAL(10, 8),
                 resolved_longitude DECIMAL(11, 8),
+                upvotes INT DEFAULT 0,
+                priority_score DECIMAL(5,2) DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             
@@ -49,6 +51,12 @@ const initDb = async () => {
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='resolved_longitude') THEN
                     ALTER TABLE complaints ADD COLUMN resolved_longitude DECIMAL(11, 8);
                 END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='upvotes') THEN
+                    ALTER TABLE complaints ADD COLUMN upvotes INT DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='priority_score') THEN
+                    ALTER TABLE complaints ADD COLUMN priority_score DECIMAL(5,2) DEFAULT 0;
+                END IF;
             END$$;
 
             CREATE TABLE IF NOT EXISTS municipalities (
@@ -60,6 +68,14 @@ const initDb = async () => {
                 latitude DECIMAL(10, 8),
                 longitude DECIMAL(11, 8),
                 radius DECIMAL(10, 2),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
