@@ -99,7 +99,7 @@ export default function ActiveComplaints() {
                     return (
                         <div
                             key={c.id}
-                            onClick={() => router.push(`/dashboard/complaint/${c.id}`)}
+                            onClick={() => router.push(`/citizen-dashboard/complaint/${c.id}`)}
                             className={`border border-l-4 ${s.border} rounded-xl p-4 hover:shadow-md transition-all cursor-pointer bg-white group`}
                         >
                             <div className="flex justify-between items-start mb-2">
@@ -138,8 +138,8 @@ export default function ActiveComplaints() {
                                     <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                         <div
                                             className={`h-full rounded-full ${priorityLabel === "Critical" ? "bg-red-500" :
-                                                    priorityLabel === "High" ? "bg-orange-500" :
-                                                        priorityLabel === "Medium" ? "bg-yellow-500" : "bg-green-500"
+                                                priorityLabel === "High" ? "bg-orange-500" :
+                                                    priorityLabel === "Medium" ? "bg-yellow-500" : "bg-green-500"
                                                 }`}
                                             style={{ width: `${score}%` }}
                                         />

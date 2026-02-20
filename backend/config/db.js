@@ -31,6 +31,9 @@ const initDb = async () => {
                 user_id INTEGER,
                 upvotes INT DEFAULT 0,
                 priority_score DECIMAL(5,2) DEFAULT 0,
+                accepted_at TIMESTAMP,
+                in_progress_at TIMESTAMP,
+                resolved_at TIMESTAMP,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             
@@ -60,6 +63,15 @@ const initDb = async () => {
                 END IF;
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='priority_score') THEN
                     ALTER TABLE complaints ADD COLUMN priority_score DECIMAL(5,2) DEFAULT 0;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='accepted_at') THEN
+                    ALTER TABLE complaints ADD COLUMN accepted_at TIMESTAMP;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='in_progress_at') THEN
+                    ALTER TABLE complaints ADD COLUMN in_progress_at TIMESTAMP;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='resolved_at') THEN
+                    ALTER TABLE complaints ADD COLUMN resolved_at TIMESTAMP;
                 END IF;
             END$$;
 

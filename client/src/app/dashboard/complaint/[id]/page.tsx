@@ -48,7 +48,11 @@ export default function ComplaintDetailPage() {
 
     useEffect(() => {
         const adminData = localStorage.getItem('municipalUser');
-        setIsAdmin(!!adminData);
+        if (!adminData) {
+            router.push('/citizen-dashboard');
+            return;
+        }
+        setIsAdmin(true);
         fetchComplaint();
     }, [id]);
 
@@ -463,7 +467,7 @@ export default function ComplaintDetailPage() {
                                                             </button>
                                                             <div className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-xs text-green-400 flex items-center gap-1">
                                                                 <MapPin size={12} />
-                                                                {resolutionLocation?.latitude.toFixed(4)}, {resolutionLocation?.longitude.toFixed(4)}
+                                                                {Number(resolutionLocation?.latitude).toFixed(4)}, {Number(resolutionLocation?.longitude).toFixed(4)}
                                                             </div>
                                                         </div>
                                                     )}

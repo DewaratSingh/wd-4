@@ -1,0 +1,949 @@
+A dual-interface civic complaint management system enabling citizens to report geo-tagged issues with image proof, while providing municipal administrators with spatial analytics through interactive maps, heatmaps, and real-time dashboards.
+Core Innovation: Live geo-verification for image uploads + Community engagement through upvoting + Spatial intelligence via clustering and heatmaps.
+
+📊 FEATURE SCOPE MATRIX
+MVP Features (Hours 0-9) - MUST HAVE ✅
+FeaturePriorityTimeComplexityUser Authentication (Basic + Guest)P01hLowComplaint Submission (Geo + Images)P02hHighLive Geo-Verification for ImagesP01.5hMediumAdmin Dashboard (Map + Stats)P02hHighStatus Workflow ManagementP01hMediumColor-Coded Map MarkersP01hMediumComplaint Detail ViewP00.5hLow
+High-Value Features (Hours 9-11) - SHOULD HAVE 🔥
+FeaturePriorityTimeComplexityHeatmap OverlayP11hMediumMarker ClusteringP10.5hLowCitizen Dashboard (My Complaints)P11hMediumCommunity Upvoting SystemP11hMediumStatus Timeline with UpdatesP10.5hLow
+Polish Features (Hour 11-12) - NICE TO HAVE ⭐
+FeaturePriorityTimeComplexityNearby Complaints FeedP20.5hLowFollow-up CommentsP20.5hLow3rd Role (Department Officer)P21hMediumReal-time NotificationsP3SkipHigh
+
+🏗️ SYSTEM ARCHITECTURE
+┌─────────────────────────────────────────────────────────────┐
+│                     CLIENT LAYER (React)                     │
+├─────────────────────────────────────────────────────────────┤
+│  Citizen App          │  Admin Dashboard  │  Shared Components│
+│  - Submit Complaint   │  - Map View       │  - Auth           │
+│  - My Complaints      │  - Heatmap        │  - Map Controls   │
+│  - Upvote/Comment     │  - Analytics      │  - Image Upload   │
+│  - Community Feed     │  - Status Mgmt    │  - Filters        │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                   API LAYER (REST/Express)                   │
+├─────────────────────────────────────────────────────────────┤
+│  /auth/*          │  /complaints/*    │  /admin/*           │
+│  - register       │  - create         │  - dashboard-stats  │
+│  - login          │  - list           │  - update-status    │
+│  - guest-create   │  - get/:id        │  - heatmap-data     │
+│                   │  - upvote         │  - cluster-data     │
+│                   │  - comment        │                     │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                  DATABASE LAYER (PostgreSQL)                 │
+├─────────────────────────────────────────────────────────────┤
+│  users  │  complaints  │  images  │  status_history  │ votes │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    EXTERNAL SERVICES                         │
+├─────────────────────────────────────────────────────────────┤
+│  Google Maps API      │  Geolocation API  │  Browser Camera  │
+│  - Map Display        │  - Live GPS       │  - Image Capture │
+│  - Geocoding          │  - Verification   │  - Geo-tagging   │
+│  - Clustering         │                   │                  │
+│  - Heatmap Layer      │                   │                  │
+└─────────────────────────────────────────────────────────────┘
+
+🗄️ DATABASE SCHEMA
+sql-- Table: users
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE,
+    password_hash VARCHAR(255),
+    name VARCHAR(100),
+    phone VARCHAR(15),
+    role VARCHAR(20) DEFAULT 'citizen', -- 'citizen', 'admin', 'officer'
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table: complaints
+CREATE TABLE complaints (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) NULL, -- NULL for guest submissions
+    guest_name VARCHAR(100),
+    guest_phone VARCHAR(15),
+    category VARCHAR(50) NOT NULL, -- Enum: pothole, streetlight, garbage, etc.
+    description TEXT NOT NULL,
+    latitude DECIMAL(10, 8) NOT NULL,
+    longitude DECIMAL(11, 8) NOT NULL,
+    status VARCHAR(20) DEFAULT 'new', -- 'new', 'in_progress', 'resolved', 'closed'
+    priority VARCHAR(10) DEFAULT 'medium', -- 'low', 'medium', 'high'
+    upvotes INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    resolved_at TIMESTAMP NULL
+);
+
+-- Table: complaint_images
+CREATE TABLE complaint_images (
+    id SERIAL PRIMARY KEY,
+    complaint_id INT REFERENCES complaints(id) ON DELETE CASCADE,
+    image_data TEXT NOT NULL, -- Base64 encoded
+    latitude DECIMAL(10, 8) NOT NULL, -- Image capture location
+    longitude DECIMAL(11, 8) NOT NULL,
+    captured_at TIMESTAMP DEFAULT NOW(),
+    is_resolution_proof BOOLEAN DEFAULT FALSE
+);
+
+-- Table: status_history
+CREATE TABLE status_history (
+    id SERIAL PRIMARY KEY,
+    complaint_id INT REFERENCES complaints(id) ON DELETE CASCADE,
+    old_status VARCHAR(20),
+    new_status VARCHAR(20) NOT NULL,
+    comment TEXT,
+    updated_by INT REFERENCES users(id),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Table: complaint_votes
+CREATE TABLE complaint_votes (
+    id SERIAL PRIMARY KEY,
+    complaint_id INT REFERENCES complaints(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    voted_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(complaint_id, user_id) -- Prevent duplicate votes
+);
+
+-- Table: complaint_comments
+CREATE TABLE complaint_comments (
+    id SERIAL PRIMARY KEY,
+    complaint_id INT REFERENCES complaints(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) NULL,
+    guest_name VARCHAR(100),
+    comment TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX idx_complaints_status ON complaints(status);
+CREATE INDEX idx_complaints_location ON complaints(latitude, longitude);
+CREATE INDEX idx_complaints_created ON complaints(created_at DESC);
+CREATE INDEX idx_complaint_images_complaint ON complaint_images(complaint_id);
+```
+
+---
+
+## 🔌 **API ENDPOINTS SPECIFICATION**
+
+### **Authentication Module**
+```
+POST   /api/auth/register
+Body: { email, password, name, phone }
+Response: { token, user: { id, email, name, role } }
+
+POST   /api/auth/login
+Body: { email, password }
+Response: { token, user: { id, email, name, role } }
+
+POST   /api/auth/guest-token
+Body: { name, phone }
+Response: { guestToken, expires_in }
+```
+
+### **Complaint Management Module**
+```
+POST   /api/complaints/create
+Headers: Authorization: Bearer <token> (optional for guests)
+Body: {
+  category: string,
+  description: string,
+  latitude: number,
+  longitude: number,
+  images: [{ data: base64, lat: number, lng: number, timestamp }],
+  guest_name?: string,
+  guest_phone?: string
+}
+Response: { complaint_id, status: 'success' }
+
+GET    /api/complaints/list
+Query: ?status=new&category=pothole&limit=50&offset=0
+Response: {
+  complaints: [{
+    id, category, description, latitude, longitude,
+    status, upvotes, created_at, image_count
+  }],
+  total_count
+}
+
+GET    /api/complaints/:id
+Response: {
+  complaint: { ...full details },
+  images: [{ id, image_data, latitude, longitude }],
+  status_history: [{ old_status, new_status, comment, updated_at }],
+  comments: [{ user_name, comment, created_at }]
+}
+
+POST   /api/complaints/:id/upvote
+Headers: Authorization: Bearer <token>
+Response: { new_upvote_count }
+
+POST   /api/complaints/:id/comment
+Body: { comment: string }
+Response: { comment_id }
+
+GET    /api/complaints/nearby
+Query: ?lat=12.9716&lng=77.5946&radius=5000&limit=10
+Response: { complaints: [...] }
+```
+
+### **Admin Management Module**
+```
+GET    /api/admin/dashboard-stats
+Response: {
+  total_complaints: number,
+  open_complaints: number,
+  resolved_this_week: number,
+  avg_resolution_time_hours: number,
+  category_breakdown: { category: count },
+  status_distribution: { status: count }
+}
+
+PUT    /api/admin/complaints/:id/status
+Body: { status: 'in_progress' | 'resolved' | 'closed', comment: string }
+Response: { success: true }
+
+GET    /api/admin/heatmap-data
+Query: ?status=new,in_progress&days=30
+Response: {
+  points: [{ lat, lng, weight }]
+}
+
+GET    /api/admin/cluster-data
+Query: ?bounds=12.9,77.5,13.0,77.6
+Response: {
+  clusters: [{ lat, lng, count, complaints: [...] }]
+}
+
+POST   /api/admin/complaints/:id/resolution-image
+Body: { image_data: base64, lat, lng }
+Response: { image_id }
+```
+
+---
+
+## 🎨 **COMPONENT ARCHITECTURE (React)**
+```
+src/
+├── components/
+│   ├── Auth/
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   └── GuestMode.jsx
+│   │
+│   ├── Citizen/
+│   │   ├── ComplaintForm.jsx          # Submit new complaint
+│   │   ├── ImageUploadWithGeo.jsx     # Live geo-verification
+│   │   ├── MyComplaints.jsx           # User's complaint list
+│   │   ├── ComplaintCard.jsx          # Single complaint display
+│   │   ├── CommunityFeed.jsx          # Nearby complaints
+│   │   └── ComplaintDetail.jsx        # Full detail view
+│   │
+│   ├── Admin/
+│   │   ├── Dashboard.jsx              # Main admin view
+│   │   ├── StatsPanel.jsx             # KPI cards
+│   │   ├── ComplaintMap.jsx           # Interactive map
+│   │   ├── HeatmapLayer.jsx           # Heatmap overlay
+│   │   ├── ComplaintTable.jsx         # List view
+│   │   └── StatusUpdateModal.jsx      # Update workflow
+│   │
+│   ├── Shared/
+│   │   ├── Map/
+│   │   │   ├── MapContainer.jsx       # Google Maps wrapper
+│   │   │   ├── MarkerCluster.jsx      # Clustering logic
+│   │   │   ├── CustomMarker.jsx       # Color-coded pins
+│   │   │   └── LocationPicker.jsx     # Click to select location
+│   │   │
+│   │   ├── ImageGallery.jsx           # Image display
+│   │   ├── StatusBadge.jsx            # Status indicator
+│   │   ├── CategoryIcon.jsx           # Category icons
+│   │   ├── UpvoteButton.jsx           # Voting component
+│   │   └── CommentSection.jsx         # Comments thread
+│   │
+│   └── Layout/
+│       ├── Navbar.jsx
+│       ├── Sidebar.jsx
+│       └── Footer.jsx
+│
+├── hooks/
+│   ├── useGeolocation.js              # GPS access
+│   ├── useImageGeoVerify.js           # Live verification
+│   ├── useComplaints.js               # Complaint CRUD
+│   └── useAuth.js                     # Auth state
+│
+├── services/
+│   ├── api.js                         # Axios wrapper
+│   ├── auth.service.js
+│   ├── complaint.service.js
+│   └── map.service.js
+│
+├── utils/
+│   ├── geoUtils.js                    # Distance calculation
+│   ├── imageUtils.js                  # Base64 conversion
+│   └── constants.js                   # Categories, statuses
+│
+└── context/
+    ├── AuthContext.jsx
+    └── MapContext.jsx
+
+🔐 LIVE GEO-VERIFICATION LOGIC
+Feature: Ensure images are captured at complaint location (not gallery uploads)
+javascript// hooks/useImageGeoVerify.js
+
+import { useState, useEffect } from 'react';
+
+export const useImageGeoVerify = (complaintLat, complaintLng) => {
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
+  const [error, setError] = useState(null);
+
+  const VERIFICATION_RADIUS = 100; // meters
+
+  useEffect(() => {
+    // Continuously watch user location
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ lat: latitude, lng: longitude });
+        
+        // Calculate distance from complaint location
+        const distance = calculateDistance(
+          complaintLat, complaintLng,
+          latitude, longitude
+        );
+        
+        setIsVerified(distance <= VERIFICATION_RADIUS);
+      },
+      (err) => setError(err.message),
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [complaintLat, complaintLng]);
+
+  const captureImage = async () => {
+    if (!isVerified) {
+      throw new Error('You must be at the complaint location to capture images');
+    }
+
+    try {
+      // Access camera
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+
+      // Capture frame (implementation simplified)
+      const imageBlob = await captureFrameFromStream(stream);
+      
+      // Convert to base64
+      const base64Image = await blobToBase64(imageBlob);
+
+      // Return image with geo-metadata
+      return {
+        data: base64Image,
+        latitude: currentLocation.lat,
+        longitude: currentLocation.lng,
+        timestamp: new Date().toISOString()
+      };
+    } catch (err) {
+      throw new Error('Camera access denied: ' + err.message);
+    }
+  };
+
+  return { isVerified, currentLocation, error, captureImage };
+};
+
+// Helper: Haversine distance formula
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in meters
+}
+UI Implementation:
+jsx// components/Citizen/ImageUploadWithGeo.jsx
+
+import { useImageGeoVerify } from '../../hooks/useImageGeoVerify';
+
+function ImageUploadWithGeo({ complaintLocation, onImagesCapture }) {
+  const { isVerified, currentLocation, captureImage } = 
+    useImageGeoVerify(complaintLocation.lat, complaintLocation.lng);
+
+  const [capturedImages, setCapturedImages] = useState([]);
+
+  const handleCapture = async () => {
+    try {
+      const image = await captureImage();
+      setCapturedImages([...capturedImages, image]);
+      onImagesCapture([...capturedImages, image]);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  return (
+    <div className="image-upload-container">
+      {!isVerified && (
+        <div className="verification-warning">
+          ⚠️ Move to complaint location to capture images
+          <div className="distance-indicator">
+            Distance: {calculateDistance(
+              complaintLocation.lat,
+              complaintLocation.lng,
+              currentLocation?.lat,
+              currentLocation?.lng
+            ).toFixed(0)}m
+          </div>
+        </div>
+      )}
+
+      <button 
+        onClick={handleCapture}
+        disabled={!isVerified || capturedImages.length >= 3}
+        className={isVerified ? 'btn-verified' : 'btn-disabled'}
+      >
+        📷 Capture Image ({capturedImages.length}/3)
+      </button>
+
+      {/* Image Preview */}
+      <div className="preview-grid">
+        {capturedImages.map((img, idx) => (
+          <img key={idx} src={img.data} alt={`Capture ${idx + 1}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+🗺️ MAP IMPLEMENTATION GUIDE
+Tech Stack:
+
+Library: @react-google-maps/api
+Features: Clustering, Heatmap, Custom Markers
+
+Setup:
+bashnpm install @react-google-maps/api
+javascript// components/Shared/Map/MapContainer.jsx
+
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+
+const libraries = ['visualization']; // For heatmap
+
+function MapContainer({ center, zoom, children }) {
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY,
+    libraries
+  });
+
+  if (!isLoaded) return <div>Loading map...</div>;
+
+  return (
+    <GoogleMap
+      mapContainerStyle={{ width: '100%', height: '600px' }}
+      center={center}
+      zoom={zoom}
+      options={{
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: true
+      }}
+    >
+      {children}
+    </GoogleMap>
+  );
+}
+Color-Coded Markers:
+javascript// components/Shared/Map/CustomMarker.jsx
+
+import { Marker } from '@react-google-maps/api';
+
+const STATUS_COLORS = {
+  new: '#EF4444',         // Red
+  in_progress: '#F59E0B', // Yellow
+  resolved: '#10B981',    // Green
+  closed: '#6B7280'       // Gray
+};
+
+function CustomMarker({ complaint, onClick }) {
+  return (
+    <Marker
+      position={{ lat: complaint.latitude, lng: complaint.longitude }}
+      icon={{
+        path: google.maps.SymbolPath.CIRCLE,
+        fillColor: STATUS_COLORS[complaint.status],
+        fillOpacity: 0.8,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+        scale: 10
+      }}
+      onClick={() => onClick(complaint)}
+      title={`${complaint.category} - ${complaint.status}`}
+    />
+  );
+}
+Marker Clustering:
+bashnpm install @googlemaps/markerclusterer
+javascript// components/Shared/Map/MarkerCluster.jsx
+
+import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { useEffect, useRef } from 'react';
+
+function MarkerCluster({ map, complaints, onMarkerClick }) {
+  const clustererRef = useRef(null);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const markers = complaints.map(complaint => {
+      const marker = new google.maps.Marker({
+        position: { lat: complaint.latitude, lng: complaint.longitude },
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: STATUS_COLORS[complaint.status],
+          fillOpacity: 0.8,
+          scale: 8
+        }
+      });
+
+      marker.addListener('click', () => onMarkerClick(complaint));
+      return marker;
+    });
+
+    clustererRef.current = new MarkerClusterer({
+      map,
+      markers,
+      renderer: {
+        render: ({ count, position }) => 
+          new google.maps.Marker({
+            position,
+            label: {
+              text: String(count),
+              color: 'white',
+              fontSize: '12px'
+            },
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: '#3B82F6',
+              fillOpacity: 0.8,
+              strokeColor: 'white',
+              strokeWeight: 2,
+              scale: 20
+            }
+          })
+      }
+    });
+
+    return () => {
+      if (clustererRef.current) {
+        clustererRef.current.clearMarkers();
+      }
+    };
+  }, [map, complaints]);
+
+  return null;
+}
+Heatmap Layer:
+javascript// components/Admin/HeatmapLayer.jsx
+
+import { HeatmapLayer } from '@react-google-maps/api';
+import { useState, useEffect } from 'react';
+
+function ComplaintHeatmap({ complaints, isVisible }) {
+  const [heatmapData, setHeatmapData] = useState([]);
+
+  useEffect(() => {
+    const data = complaints
+      .filter(c => c.status !== 'closed')
+      .map(c => ({
+        location: new google.maps.LatLng(c.latitude, c.longitude),
+        weight: c.upvotes + 1 // Weight by popularity
+      }));
+    setHeatmapData(data);
+  }, [complaints]);
+
+  if (!isVisible) return null;
+
+  return (
+    <HeatmapLayer
+      data={heatmapData}
+      options={{
+        radius: 30,
+        opacity: 0.6,
+        gradient: [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+      }}
+    />
+  );
+}
+
+📊 ADMIN DASHBOARD LAYOUT
+jsx// components/Admin/Dashboard.jsx
+
+function AdminDashboard() {
+  return (
+    <div className="dashboard-container">
+      {/* Top Stats Bar */}
+      <div className="stats-grid">
+        <StatCard 
+          title="Total Complaints" 
+          value={1247} 
+          icon="📊"
+          trend="+12% this week"
+        />
+        <StatCard 
+          title="Open Complaints" 
+          value={89} 
+          icon="🔴"
+          trend="23 critical"
+        />
+        <StatCard 
+          title="Resolved This Week" 
+          value={156} 
+          icon="✅"
+          trend="+8% vs last week"
+        />
+        <StatCard 
+          title="Avg Resolution Time" 
+          value="2.3 days" 
+          icon="⏱️"
+          trend="-15% improvement"
+        />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="dashboard-main">
+        {/* Left: Map View (60% width) */}
+        <div className="map-section">
+          <div className="map-controls">
+            <FilterBar />
+            <ToggleGroup>
+              <Toggle label="Heatmap" />
+              <Toggle label="Clustering" />
+            </ToggleGroup>
+          </div>
+          
+          <MapContainer center={centerCoords} zoom={12}>
+            <MarkerCluster complaints={complaints} />
+            <HeatmapLayer complaints={complaints} isVisible={showHeatmap} />
+          </MapContainer>
+        </div>
+
+        {/* Right: Category Breakdown (40% width) */}
+        <div className="analytics-section">
+          <CategoryChart data={categoryBreakdown} />
+          <StatusDistribution data={statusDistribution} />
+          <RecentActivity complaints={recentComplaints} />
+        </div>
+      </div>
+
+      {/* Bottom: Complaint Table */}
+      <div className="complaint-table">
+        <ComplaintTable 
+          complaints={complaints}
+          onStatusUpdate={handleStatusUpdate}
+        />
+      </div>
+    </div>
+  );
+}
+
+⏱️ 12-HOUR EXECUTION TIMELINE
+Phase 1: Foundation (Hours 0-3)
+Hour 0-1: Project Setup
+
+ Initialize React app with Vite/CRA
+ Setup Express backend
+ Configure PostgreSQL database
+ Install core dependencies:
+
+bash  # Frontend
+  npm install @react-google-maps/api axios react-router-dom
+  npm install @googlemaps/markerclusterer
+  
+  # Backend
+  npm install express pg bcryptjs jsonwebtoken cors dotenv
+
+ Create .env files with Google Maps API key
+ Setup database connection and run schema
+
+Hour 1-2: Authentication System
+
+ Build user registration/login API
+ Implement JWT token generation
+ Create guest token system
+ Build Login/Register UI components
+ Add auth context provider
+ Test: Register user → Login → Receive token
+
+Hour 2-3: Database & Seed Data
+
+ Create all tables (users, complaints, images, etc.)
+ Write seed script for 50-100 dummy complaints
+ Populate with realistic locations (choose one city)
+ Mix of statuses (30% new, 40% in_progress, 30% resolved)
+ Test: Query complaints by status
+
+
+Phase 2: Core Features (Hours 3-7)
+Hour 3-4: Complaint Submission
+
+ Build ComplaintForm component
+ Implement LocationPicker (both auto-detect + manual)
+ Create image upload handler (Base64 conversion)
+ Build POST /api/complaints/create endpoint
+ Test: Submit complaint with 2 images
+
+Hour 4-5: Live Geo-Verification
+
+ Implement useImageGeoVerify hook
+ Access browser camera API
+ Calculate distance from complaint location
+ Show verification status UI
+ Test: Move device → Watch verification toggle
+
+Hour 5-6: Map Display
+
+ Setup Google Maps container
+ Fetch complaints from API
+ Render color-coded markers
+ Implement marker click → Show popup
+ Test: See all complaints on map
+
+Hour 6-7: Admin Status Management
+
+ Build StatusUpdateModal
+ Create PUT /api/admin/complaints/:id/status
+ Add status_history tracking
+ Show status timeline in complaint detail
+ Test: Update status → Verify in citizen view
+
+
+Phase 3: High-Value Features (Hours 7-10)
+Hour 7-8: Clustering & Heatmap
+
+ Implement MarkerClusterer
+ Add heatmap toggle control
+ Create GET /api/admin/heatmap-data endpoint
+ Render HeatmapLayer component
+ Test: Zoom out → See clusters, Toggle heatmap
+
+Hour 8-9: Citizen Dashboard
+
+ Build MyComplaints component
+ Show user's submitted complaints
+ Display status timeline
+ Add complaint detail modal
+ Test: View my complaints → Check status
+
+Hour 9-10: Upvoting System
+
+ Create UpvoteButton component
+ Build POST /api/complaints/:id/upvote endpoint
+ Prevent duplicate votes (check complaint_votes table)
+ Update upvote count in real-time
+ Show upvote count on complaint cards
+ Test: Upvote → Refresh → Count persists
+
+
+Phase 4: Polish & Demo Prep (Hours 10-12)
+Hour 10-11: Admin Dashboard Analytics
+
+ Build StatsPanel with KPIs
+ Create category breakdown chart (Recharts/Chart.js)
+ Add status distribution pie chart
+ Show recent activity feed
+ Test: Dashboard loads with live data
+
+Hour 11-12: Final Polish
+
+ Add loading spinners
+ Implement error handling (toast notifications)
+ Add empty states ("No complaints yet")
+ Responsive design fixes
+ Write demo script
+ Record 3-minute demo video
+ Prepare 5-slide presentation
+
+BONUS (If time permits):
+
+ Comment system on complaints
+ Nearby complaints feed (within 5km)
+ 3rd role: Department Officer view
+
+
+🎬 DEMO SCRIPT (3 Minutes)
+Act 1: Citizen Journey (60 seconds)
+
+Open app → "I'm a citizen who found a pothole"
+Guest mode → Enter name and phone
+Click 'Report Issue' → Select category: "Pothole/Road Damage"
+Pick location → "Either auto-detect or click on map"
+Capture image → "Notice the live geo-verification - I must be at the location"
+Submit → "Complaint created with ID #1248"
+
+Act 2: Community Engagement (30 seconds)
+
+Browse nearby complaints → "I see others reported street light issues"
+Upvote → "I can upvote to show this affects me too"
+View detail → "See images, location, and status timeline"
+
+Act 3: Admin Power (90 seconds)
+
+Switch to admin login → "Now I'm the municipal officer"
+Dashboard overview → "89 open complaints, 156 resolved this week"
+Toggle heatmap → "Red zones show complaint density - this area needs attention"
+Zoom out → "Clustering groups nearby issues"
+Click complaint → "I can see the pothole image, location verified"
+Update status → "Change to 'In Progress', add comment: 'Road repair crew dispatched'"
+Show charts → "Category breakdown shows potholes are 35% of complaints"
+Closing → "Citizen gets instant transparency, admin gets spatial intelligence"
+
+
+🚨 RISK MITIGATION
+RiskMitigationBackup PlanGoogle Maps API quota exceededUse free tier wisely, cache map tilesSwitch to Leaflet (OpenStreetMap)Geo-verification too complexSimplify to 200m radius, skip live trackingAllow gallery upload with warningImage upload size issuesCompress images client-side before Base64Limit to 1 image/complaintDatabase connection issuesUse connection pooling, error retry logicSwitch to SQLite for demoClustering library bugsUse simpler custom clustering logicShow all markers without clusteringTime constraint on heatmapHeatmap is P1, skip if neededShow regular map with color-coding only
+
+🎯 SUCCESS METRICS
+Technical Excellence
+
+ Clean, modular code with comments
+ No console errors in production
+ Mobile-responsive design
+ <2s page load time
+ API response times <500ms
+
+Feature Completeness
+
+ All P0 features working
+ At least 3 P1 features implemented
+ Smooth demo flow (no crashes)
+ 50+ seed complaints visible
+
+Judge Impact
+
+ "Wow" moment: Heatmap or live geo-verification
+ Clear social impact story
+ Professional UI/UX
+ Scalability explained in presentation
+
+
+🛠️ TECH STACK SUMMARY
+yamlFrontend:
+  Framework: React 18
+  Routing: React Router v6
+  State: Context API + useState
+  Maps: @react-google-maps/api
+  HTTP: Axios
+  Styling: Tailwind CSS / Material-UI
+  Icons: React Icons
+  Charts: Recharts
+
+Backend:
+  Runtime: Node.js 18+
+  Framework: Express.js
+  Database: PostgreSQL 15
+  Auth: JWT (jsonwebtoken)
+  Security: bcryptjs, helmet, cors
+  Validation: express-validator
+
+DevOps:
+  Version Control: Git
+  Hosting: Vercel (Frontend) + Render (Backend)
+  Database Hosting: Railway / Supabase
+  Environment: dotenv
+
+📦 ENVIRONMENT VARIABLES
+bash# Frontend (.env)
+REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_GOOGLE_MAPS_KEY=your_google_maps_api_key
+
+# Backend (.env)
+PORT=5000
+DATABASE_URL=postgresql://user:pass@localhost:5432/civic_portal
+JWT_SECRET=your_super_secret_key_min_32_chars
+JWT_EXPIRE=7d
+NODE_ENV=development
+
+🏁 FINAL CHECKLIST
+Before Submission
+
+ Code commented and clean
+ README.md with setup instructions
+ Demo video recorded (3 mins)
+ PPT presentation ready (5 slides max)
+ GitHub repo created with proper .gitignore
+ Hosted URLs working (frontend + backend)
+ Database seeded with demo data
+
+Presentation Slides
+
+Problem Statement (30s)
+
+Civic complaints are slow, opaque, inefficient
+
+
+Solution Overview (30s)
+
+Geo-verified complaints + Spatial analytics
+
+
+Live Demo (2 mins)
+
+Show citizen submit → Admin respond
+
+
+Technical Highlights (30s)
+
+Live geo-verification, Heatmaps, Clustering
+
+
+Impact & Future (30s)
+
+Scalability, AI integration, Multi-city rollout
+
+
+
+
+🎖️ COMPETITIVE ADVANTAGES
+What makes this solution stand out:
+
+Live Geo-Verification → Prevents fake/stock image submissions
+Community Upvoting → Democratic prioritization
+Spatial Intelligence → Heatmaps show systemic issues
+Dual Authentication → Guest mode lowers barrier to entry
+Real-World Ready → Modular design for easy scaling
+
+
+📞 FINAL NOTES
+Judge Appeal:
+
+"This isn't just a CRUD app - it's spatial intelligence meets civic tech"
+"The live geo-verification solves a real fraud problem"
+"Heatmaps turn complaints into actionable insights for urban planning"
+
+Execution Confidence:
+With your full-stack skills, this is achievable in 12 hours with proper time boxing. The PRD prioritizes features ruthlessly - nail P0, ace P1, skip P2 if needed.

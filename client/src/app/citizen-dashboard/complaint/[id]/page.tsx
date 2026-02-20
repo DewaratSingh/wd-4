@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, CheckCircle, FileText, Phone, MapPin, Calendar, Clock } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import JourneyTimeline from '../../components/JourneyTimeline';
 import { motion } from 'framer-motion';
 
 export default function CitizenComplaintDetailPage() {
@@ -164,6 +165,9 @@ export default function CitizenComplaintDetailPage() {
                             </div>
                         </div>
 
+                        {/* Citizen Journey Timeline */}
+                        <JourneyTimeline complaint={complaint} />
+
                         {/* Resolution Proof Card (If available) */}
                         {(complaint.resolved_text || complaint.resolved_image_url) && (
                             <motion.div
@@ -194,7 +198,7 @@ export default function CitizenComplaintDetailPage() {
                                                 <div className="space-y-2">
                                                     <label className="text-emerald-700 font-bold text-xs uppercase tracking-widest">Resolution Location</label>
                                                     <div className="flex items-center justify-between p-4 bg-emerald-50/20 rounded-2xl border border-emerald-100">
-                                                        <span className="text-gray-900 font-semibold">{complaint.resolved_latitude.toFixed(4)}, {complaint.resolved_longitude.toFixed(4)}</span>
+                                                        <span className="text-gray-900 font-semibold">{Number(complaint.resolved_latitude).toFixed(4)}, {Number(complaint.resolved_longitude).toFixed(4)}</span>
                                                         <a
                                                             href={`https://www.google.com/maps?q=${complaint.resolved_latitude},${complaint.resolved_longitude}`}
                                                             target="_blank"

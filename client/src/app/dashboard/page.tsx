@@ -10,6 +10,7 @@ import StatusDonutChart from "./components/StatusDonutChart";
 import CategoryPanel from "./components/CategoryPanel";
 import NeedsAttentionPanel from "./components/NeedsAttentionPanel";
 import WardPerformancePanel from "./components/WardPerformancePanel";
+import AdminActivityHeatmap from "./components/AdminActivityHeatmap";
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<any>(null);
@@ -64,7 +65,12 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    {/* Row 3 — By Category | Needs Attention | Ward Performance */}
+                    {/* Row 3 — Heatmap Density */}
+                    <div className="grid grid-cols-1">
+                        <AdminActivityHeatmap />
+                    </div>
+
+                    {/* Row 4 — By Category | Needs Attention | Ward Performance */}
                     <div className="grid grid-cols-3 gap-4 pb-6">
                         <CategoryPanel />
                         <NeedsAttentionPanel />
