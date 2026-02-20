@@ -9,28 +9,20 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@types/leaflet": "^1.9.21",
     "clsx": "^2.1.1",
     "framer-motion": "^12.34.2",
     "leaflet": "^1.9.4",
-<<<<<<< HEAD
     "leaflet-defaulticon-compatibility": "^0.1.2",
     "leaflet.heat": "^0.2.0",
-=======
->>>>>>> ba474d32bf2565b408a472594d8633b667128599
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",
     "react-webcam": "^7.2.0",
-<<<<<<< HEAD
     "recharts": "^3.7.0",
-    "tailwind-merge": "^3.5.0"
-=======
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7"
->>>>>>> ba474d32bf2565b408a472594d8633b667128599
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -40,8 +32,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "leaflet": "^1.9.4",
-    "react-leaflet": "^5.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
