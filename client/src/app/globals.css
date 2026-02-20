@@ -28,8 +28,25 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+  --color-navy: #050B1F;
+  /* Keep for dark mode if needed */
+  --color-electric-indigo: #4F46E5;
+  --color-vibrant-orange: #FF6B35;
+  --color-success-emerald: #10B981;
+  --color-slate-body: #94A3B8;
+
+  /* Light Theme Specifics */
+  --color-light-bg: #F8FAFC;
+  /* Slate-50 */
+  --color-light-text-heading: #0F172A;
+  /* Slate-900 */
+  --color-light-text-body: #475569;
+  /* Slate-600 */
+  --color-light-card-bg: #FFFFFF;
+  --color-light-border: #E2E8F0;
+  /* Slate-200 */
 }
 
 body {
