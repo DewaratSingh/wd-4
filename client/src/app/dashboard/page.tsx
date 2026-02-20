@@ -1,126 +1,51 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { MapPin, Phone, FileText, LayoutDashboard, LogOut } from 'lucide-react';
+import { motion } from "framer-motion";
+import Sidebar from "./components/Sidebar";
+import DashboardHeader from "./components/DashboardHeader";
+import StatsCards from "./components/StatsCards";
+import ComplaintTrendChart from "./components/ComplaintTrendChart";
+import StatusDonutChart from "./components/StatusDonutChart";
+import CategoryPanel from "./components/CategoryPanel";
+import NeedsAttentionPanel from "./components/NeedsAttentionPanel";
+import WardPerformancePanel from "./components/WardPerformancePanel";
 
 export default function DashboardPage() {
-    const router = useRouter();
-    const [user, setUser] = useState<any>(null);
-    const [complaints, setComplaints] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem('municipalUser');
-        if (!storedUser) {
-            router.push('/signin');
-            return;
-        }
-
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        fetchComplaints(parsedUser);
-    }, [router]);
-
-    const fetchComplaints = async (currentUser: any) => {
-        try {
-            const res = await fetch('http://localhost:3000/api/my-complaints', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    latitude: currentUser.latitude,
-                    longitude: currentUser.longitude,
-                    radius: currentUser.radius
-                })
-            });
-            const data = await res.json();
-            if (data.success) {
-                setComplaints(data.complaints);
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('municipalUser');
-        router.push('/signin');
-    };
-
-    if (!user) return null;
-
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Navbar */}
-            <nav className="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center sticky top-0 z-10">
-                <div className="flex items-center gap-2 text-blue-400 font-bold text-xl">
-                    <LayoutDashboard />
-                    <span>{user.municipal_name} Dashboard</span>
-                </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-400">Radius: {user.radius}km</span>
-                    <button onClick={handleLogout} className="bg-red-900/50 hover:bg-red-900 text-red-200 px-3 py-1 rounded flex items-center gap-1 text-sm border border-red-800 transition">
-                        <LogOut size={14} /> Logout
-                    </button>
-                </div>
-            </nav>
+        <div className="flex h-screen bg-gray-50 overflow-hidden">
+            {/* Sidebar */}
+            <Sidebar />
 
-            <main className="p-4 max-w-7xl mx-auto">
-                <h1 className="text-2xl font-bold mb-6">Active Complaints ({complaints.length})</h1>
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-h-0 ml-[230px]">
+                {/* Header */}
+                <DashboardHeader />
 
-                {loading ? (
-                    <p>Loading complaints...</p>
-                ) : complaints.length === 0 ? (
-                    <div className="text-center py-20 bg-gray-800/50 rounded-lg border border-gray-700">
-                        <p className="text-gray-400 text-lg">No complaints found within your jurisdiction.</p>
+                {/* Scrollable body */}
+                <main className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+                    {/* Row 1 — Stats Cards */}
+                    <StatsCards />
+
+                    {/* Row 2 — Complaint Trend + Donut Chart */}
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="col-span-2">
+                            <ComplaintTrendChart />
+                        </div>
+                        <div>
+                            <StatusDonutChart />
+                        </div>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {complaints.map((complaint) => (
-                            <div
-                                key={complaint.id}
-                                onClick={() => router.push(`/dashboard/complaint/${complaint.id}`)}
-                                className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 shadow-lg hover:border-blue-500 cursor-pointer transition"
-                            >
-                                <div className="h-48 bg-black relative">
-                                    <img src={complaint.image_url} alt="Complaint" className="w-full h-full object-contain" />
-                                    <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
-                                        {new Date(complaint.created_at).toLocaleDateString()}
-                                    </div>
-                                    <div className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded backdrop-blur-sm ${complaint.progress === 'Resolved' ? 'bg-green-600' :
-                                            complaint.progress === 'Work in Progress' ? 'bg-yellow-600' :
-                                                complaint.progress === 'Closed' ? 'bg-gray-600' : 'bg-red-600'
-                                        }`}>
-                                        {complaint.progress || 'Pending'}
-                                    </div>
-                                </div>
 
-                                <div className="p-4 space-y-3">
-                                    <div className="flex items-start gap-2 text-gray-300">
-                                        <FileText size={18} className="mt-1 flex-shrink-0 text-blue-400" />
-                                        <p className="text-sm">{complaint.notes}</p>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 text-gray-300">
-                                        <Phone size={18} className="text-green-400" />
-                                        <a href={`tel:${complaint.phone}`} className="text-sm hover:underline">{complaint.phone}</a>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 text-gray-400 text-xs pt-2 border-t border-gray-700">
-                                        <MapPin size={14} />
-                                        <span>{complaint.latitude}, {complaint.longitude}</span>
-                                        <span className="ml-auto text-blue-300 bg-blue-900/30 px-2 py-0.5 rounded">
-                                            {complaint.distanceFromMuni?.toFixed(2)} km away
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                    {/* Row 3 — By Category | Needs Attention | Ward Performance */}
+                    <div className="grid grid-cols-3 gap-4 pb-6">
+                        <CategoryPanel />
+                        <NeedsAttentionPanel />
+                        <WardPerformancePanel />
                     </div>
-                )}
-            </main>
+
+                </main>
+            </div>
         </div>
     );
 }

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+<<<<<<< HEAD
   --background: #f3f4f6;
   --foreground: #111827;
   --primary: #2563eb;
@@ -13,11 +14,16 @@
   --card: #ffffff;
   --card-foreground: #1e293b;
   --border: #e2e8f0;
+=======
+  --background: #f9fafb;
+  --foreground: #111827;
+>>>>>>> c7114b5 (feat: Implement initial dashboard UI featuring category panels, complaint trend charts, and statistical cards.)
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+<<<<<<< HEAD
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -29,11 +35,16 @@
   --color-card-foreground: var(--card-foreground);
   --color-border: var(--border);
   --font-sans: var(--font-inter);
+=======
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+>>>>>>> c7114b5 (feat: Implement initial dashboard UI featuring category panels, complaint trend charts, and statistical cards.)
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+<<<<<<< HEAD
   font-family: var(--font-sans), sans-serif;
   @apply antialiased;
 }
@@ -53,4 +64,25 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-slate-300;
+=======
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+>>>>>>> c7114b5 (feat: Implement initial dashboard UI featuring category panels, complaint trend charts, and statistical cards.)
 }
