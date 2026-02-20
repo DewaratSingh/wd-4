@@ -6,8 +6,23 @@ import { MapPin, Camera, Copy, ThumbsUp, ArrowRight, Bell, Clock, AlertTriangle,
 
 export const Features = () => {
     return (
-        <section id="features" className="py-24 bg-slate-50 text-slate-900 overflow-hidden">
-            <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+        <section id="features" className="relative py-24 text-slate-900 overflow-hidden" style={{
+            backgroundColor: '#f9fbff',
+            backgroundImage: `
+                linear-gradient(to right, #dde6f5 1px, transparent 1px),
+                linear-gradient(to bottom, #dde6f5 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+        }}>
+            {/* Top fade — blends with how-it-works above */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-white to-transparent z-10" />
+            {/* Bottom fade — blends with next section */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-white to-transparent z-10" />
+            {/* Radial accent — top-right orange glow */}
+            <div className="pointer-events-none absolute -top-24 -right-24 w-[500px] h-[500px] rounded-full bg-orange-100/50 blur-[120px] z-0" />
+            {/* Radial accent — bottom-left indigo glow */}
+            <div className="pointer-events-none absolute -bottom-24 -left-24 w-[400px] h-[400px] rounded-full bg-indigo-100/60 blur-[100px] z-0" />
+            <div className="max-w-[1440px] mx-auto px-6 md:px-12 relative z-20">
 
                 {/* Section Header */}
                 <div className="text-center mb-20">
