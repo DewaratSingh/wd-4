@@ -9,14 +9,6 @@ import { motion } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const menuItems = [
-    { icon: Home, label: "Home", href: "/citizen-dashboard" },
-    { icon: ClipboardList, label: "My Complaints", href: "/citizen-dashboard?view=my-complaints" },
-    { icon: MapIcon, label: "City Map", href: "/dashboard/map" },
-    { icon: Users, label: "Community", href: "/community" },
-    { icon: Bell, label: "Notifications", href: "/notifications" },
-];
-
 export default function Sidebar() {
     const router = useRouter();
     const pathname = usePathname();
@@ -28,6 +20,26 @@ export default function Sidebar() {
         if (cu) setUser(JSON.parse(cu));
         else if (mu) setUser(JSON.parse(mu));
     }, []);
+
+    const menuItems = [
+        { icon: Home, label: "Home", href: "/citizen-dashboard" },
+        {
+            icon: ClipboardList,
+            label: "My Complaints",
+            href: user?.id ? `/citizen-dashboard/complaints/${user.id}` : "/citizen-dashboard?view=my-complaints"
+        },
+        { icon: MapIcon, label: "City Map", href: "/citizen-dashboard/map" },
+        { icon: Users, label: "Community", href: "/citizen-dashboard/community" },
+        { icon: Bell, label: "Notifications", href: "/citizen-dashboard/notifications" },
+    ];
+
+    const isActive = (href: string) => {
+        const baseHref = href.split('?')[0];
+        if (baseHref === "/citizen-dashboard") {
+            return pathname === "/citizen-dashboard";
+        }
+        return pathname?.startsWith(baseHref);
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("currentUser");
@@ -49,10 +61,6 @@ export default function Sidebar() {
     const citizenId = user?.id
         ? `MUM-${String(user.id).padStart(4, "0")}-${(user.email ?? "XX").substring(0, 2).toUpperCase()}`
         : "N/A";
-
-    const isActive = (href: string) =>
-        pathname === href ||
-        (href !== "/citizen-dashboard" && pathname?.startsWith(href.split("?")[0]));
 
     return (
         <aside className="hidden lg:flex flex-col w-72 h-[calc(100vh-64px)] overflow-y-auto sticky top-16 p-5 gap-4 shrink-0">

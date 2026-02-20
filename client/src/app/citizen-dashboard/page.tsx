@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
 import HeroBanner from "./components/HeroBanner";
 import QuickActions from "./components/QuickActions";
 import StatsBar from "./components/StatsBar";
@@ -41,144 +39,134 @@ export default function CitizenDashboard() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
-            <Navbar />
+        <div className="space-y-6">
 
-            <div className="max-w-[1600px] mx-auto flex pt-4">
-                <Sidebar />
+            {/* Hero Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+            >
+                <HeroBanner />
+            </motion.div>
 
-                <main className="flex-1 px-4 lg:px-8 pb-12 overflow-x-hidden">
-                    <div className="space-y-6">
+            {/* Quick Actions */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+            >
+                <QuickActions />
+            </motion.div>
 
-                        {/* Hero Section */}
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                {/* Left Column (Stats + Complaints) */}
+                <div className="xl:col-span-2 space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.2 }}
+                    >
+                        <StatsBar stats={{
+                            resolved: complaints.filter(c => c.progress === 'Resolved').length,
+                            inProgress: complaints.filter(c => c.progress === 'Work in Progress' || c.progress === 'Accepted').length,
+                            newToday: complaints.filter(c => new Date(c.created_at).toDateString() === new Date().toDateString()).length
+                        }} />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.3 }}
+                    >
+                        <ActiveComplaints />
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.4, delay: 0.35 }}
+                            className="h-[350px]"
                         >
-                            <HeroBanner />
-                        </motion.div>
-
-                        {/* Quick Actions */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.1 }}
-                        >
-                            <QuickActions />
-                        </motion.div>
-
-                        {/* Main Content Grid */}
-                        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-                            {/* Left Column (Stats + Complaints) */}
-                            <div className="xl:col-span-2 space-y-6">
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.2 }}
-                                >
-                                    <StatsBar stats={{
-                                        resolved: complaints.filter(c => c.progress === 'Resolved').length,
-                                        inProgress: complaints.filter(c => c.progress === 'Work in Progress' || c.progress === 'Accepted').length,
-                                        newToday: complaints.filter(c => new Date(c.created_at).toDateString() === new Date().toDateString()).length
-                                    }} />
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.3 }}
-                                >
-                                    <ActiveComplaints />
-                                </motion.div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.35 }}
-                                        className="h-[350px]"
-                                    >
-                                        <ActivityHeatmap />
-                                    </motion.div>
-
-                                    <motion.div
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.4 }}
-                                        className="h-[350px]"
-                                    >
-                                        <ResolutionTrend />
-                                    </motion.div>
-                                </div>
-                            </div>
-
-                            {/* Right Column (Map + Analytics) */}
-                            <div className="space-y-6">
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.2 }}
-                                    className="h-[420px]"
-                                >
-                                    <WardMap complaints={complaints} />
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.25 }}
-                                >
-                                    <WeatherCard />
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.3 }}
-                                    className="h-[350px]"
-                                >
-                                    <CategoryDistribution />
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.35 }}
-                                >
-                                    <CommunityPriority />
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ duration: 0.4, delay: 0.4 }}
-                                >
-                                    <QuickServices />
-                                </motion.div>
-                            </div>
-
-                        </div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.45 }}
-                        >
-                            <IssuesNearYou complaints={complaints} />
+                            <ActivityHeatmap />
                         </motion.div>
 
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 0.5 }}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.4, delay: 0.4 }}
+                            className="h-[350px]"
                         >
-                            <EmergencySection />
+                            <ResolutionTrend />
                         </motion.div>
                     </div>
-                </main>
+                </div>
+
+                {/* Right Column (Map + Analytics) */}
+                <div className="space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.2 }}
+                        className="h-[420px]"
+                    >
+                        <WardMap complaints={complaints} />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.25 }}
+                    >
+                        <WeatherCard />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.3 }}
+                        className="h-[350px]"
+                    >
+                        <CategoryDistribution />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.35 }}
+                    >
+                        <CommunityPriority />
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.4 }}
+                    >
+                        <QuickServices />
+                    </motion.div>
+                </div>
+
             </div>
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.45 }}
+            >
+                <IssuesNearYou complaints={complaints} />
+            </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.5 }}
+            >
+                <EmergencySection />
+            </motion.div>
         </div>
     );
 }
