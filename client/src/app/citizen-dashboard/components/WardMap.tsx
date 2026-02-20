@@ -73,43 +73,40 @@ export default function WardMap({ complaints }: WardMapProps) {
                 </button>
             </div>
 
-            <div className="relative flex-1 bg-blue-50 rounded-xl overflow-hidden min-h-[300px] z-0">
-                {/* Leaflet Map */}
-                <div className="absolute inset-0">
-                    <MapContainer
-                        center={mapCenter}
-                        zoom={13}
-                        style={{ height: '100%', width: '100%' }}
-                        scrollWheelZoom={false}
-                    >
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        {complaints.map((complaint) => (
-                            <Marker
-                                key={complaint.id}
-                                position={[complaint.latitude, complaint.longitude]}
-                            >
-                                <Popup>
-                                    <div className="text-sm">
-                                        <p className="font-bold mb-1">Status: {complaint.progress}</p>
-                                        <p>{complaint.notes}</p>
-                                        {complaint.image_url && (
-                                            <img src={complaint.image_url} alt="Issue" className="w-full h-20 object-cover mt-2 rounded" />
-                                        )}
-                                    </div>
-                                </Popup>
-                            </Marker>
-                        ))}
-                    </MapContainer>
-                </div>
+            {/* Map container — overflow-hidden clips the legend badge inside card bounds */}
+            <div className="relative flex-1 rounded-xl overflow-hidden" style={{ isolation: 'isolate' }}>
+                <MapContainer
+                    center={mapCenter}
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
+                    scrollWheelZoom={false}
+                >
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    {complaints.map((complaint) => (
+                        <Marker
+                            key={complaint.id}
+                            position={[complaint.latitude, complaint.longitude]}
+                        >
+                            <Popup>
+                                <div className="text-sm">
+                                    <p className="font-bold mb-1">Status: {complaint.progress}</p>
+                                    <p>{complaint.notes}</p>
+                                    {complaint.image_url && (
+                                        <img src={complaint.image_url} alt="Issue" className="w-full h-20 object-cover mt-2 rounded" />
+                                    )}
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+                </MapContainer>
 
-                {/* Legend */}
-                <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-lg text-xs font-medium shadow-sm flex gap-3 z-[1000]">
-                    <div className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-red-500"></span> Issue
-                    </div>
+                {/* Legend — positioned inside overflow-hidden so it stays clipped within card */}
+                <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md flex items-center gap-1.5 pointer-events-none" style={{ zIndex: 400 }}>
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0" />
+                    <span className="text-slate-700">Active Issue</span>
                 </div>
             </div>
         </div>
