@@ -6,10 +6,7 @@ import GoogleTranslate from "@/components/GoogleTranslate";
 
 export default function DashboardHeader({ title }: { title?: string }) {
     return (
-        <motion.header
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
+        <header
             className="flex items-center justify-between px-6 py-4 bg-gray-50 border-b border-gray-200 sticky top-0 z-20"
         >
             {/* Greeting */}
@@ -54,6 +51,6 @@ export default function DashboardHeader({ title }: { title?: string }) {
                     </motion.button>
                 </div>
             </div>
-        </motion.header>
+        </header>
     );
 }

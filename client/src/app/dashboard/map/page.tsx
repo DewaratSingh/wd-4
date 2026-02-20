@@ -3,9 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
-import DashboardHeader from '../components/DashboardHeader';
+import { Loader } from 'lucide-react';
 
 // Dynamically import MapComponent to avoid SSR issues with Leaflet
 const MapComponent = dynamic(() => import('../../../components/MapComponent'), {
@@ -77,25 +75,18 @@ export default function MapPage() {
     };
 
     return (
-        <div className="flex h-screen bg-gray-50 overflow-hidden">
-            <Sidebar />
-            <div className="flex-1 flex flex-col min-h-0 ml-[230px]">
-                <DashboardHeader title="Live Complaint Map" />
-                <main className="flex-1 relative">
-                    {/* Map */}
-                    {userLocation ? (
-                        <MapComponent complaints={complaints} center={userLocation} />
-                    ) : (
-                        <div className="flex-1 flex items-center justify-center text-gray-500 h-full">
-                            <Loader className="animate-spin" />
-                            <span className="ml-2">Locating...</span>
-                        </div>
-                    )}
-                    <div className="absolute top-4 right-4 z-[400] bg-white text-black px-4 py-2 rounded shadow-lg text-sm font-bold border border-gray-200">
-                        {complaints.length} Complaints Found
-                    </div>
-                </main>
+        <main className="flex-1 relative h-full">
+            {userLocation ? (
+                <MapComponent complaints={complaints} center={userLocation} />
+            ) : (
+                <div className="flex-1 flex items-center justify-center text-gray-500 h-full">
+                    <Loader className="animate-spin" />
+                    <span className="ml-2">Locating...</span>
+                </div>
+            )}
+            <div className="absolute top-4 right-4 z-[400] bg-white text-black px-4 py-2 rounded shadow-lg text-sm font-bold border border-gray-200">
+                {complaints.length} Complaints Found
             </div>
-        </div>
+        </main>
     );
 }

@@ -47,10 +47,7 @@ export default function Sidebar() {
   };
 
   return (
-    <motion.aside
-      initial={{ x: -260 }}
-      animate={{ x: 0 }}
-      transition={{ type: "spring", stiffness: 280, damping: 30 }}
+    <aside
       className="fixed left-0 top-0 h-full w-[230px] bg-[#111827] flex flex-col z-50 shadow-xl"
     >
       {/* Logo */}
@@ -102,14 +99,8 @@ export default function Sidebar() {
                         }`}
                     >
                       {isActive && (
-                        <motion.div
-                          layoutId="activeNav"
+                        <div
                           className="absolute inset-0 bg-indigo-600 rounded-lg"
-                          transition={{
-                            type: "spring",
-                            stiffness: 380,
-                            damping: 30,
-                          }}
                         />
                       )}
                       <item.icon
@@ -162,6 +153,6 @@ export default function Sidebar() {
           </div>
         </motion.div>
       </div>
-    </motion.aside>
+    </aside>
   );
 }
