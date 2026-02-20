@@ -6,7 +6,7 @@ import { Star, CheckCircle2, BadgeCheck, Building2, ArrowLeft, ArrowRight, MapPi
 
 export const Impact = () => {
     return (
-        <section className="bg-light-bg text-slate-900 py-24 overflow-hidden relative">
+        <section id="impact" className="bg-light-bg text-slate-900 py-24 overflow-hidden relative">
 
             {/* Subtle grid bg like hero */}
             <div
