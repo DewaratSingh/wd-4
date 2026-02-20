@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { Camera, MapPin, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
+import DuplicateDetectionModal from '@/components/DuplicateDetectionModal';
 
 export default function ComplaintPage() {
     const webcamRef = useRef<Webcam>(null);
@@ -17,6 +18,11 @@ export default function ComplaintPage() {
     const [submitting, setSubmitting] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [successData, setSuccessData] = useState<any>(null);
+
+    // Duplicate detection states
+    const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+    const [duplicates, setDuplicates] = useState<any[]>([]);
+    const [checkingDuplicates, setCheckingDuplicates] = useState(false);
 
     // Get location continuously
     useEffect(() => {
@@ -75,7 +81,7 @@ export default function ComplaintPage() {
 
         setDistanceCheck('checking');
         try {
-            const response = await fetch('http://localhost:5000/api/check-location', {
+            const response = await fetch('http://localhost:3000/api/check-location', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(location)
@@ -97,15 +103,52 @@ export default function ComplaintPage() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const checkForDuplicates = async () => {
+        if (!image || !location) return;
+
+        setCheckingDuplicates(true);
+        setErrorMsg('');
+
+        try {
+            const res = await fetch(image);
+            const blob = await res.blob();
+
+            const formData = new FormData();
+            formData.append('image', blob, 'capture.jpg');
+            formData.append('notes', notes);
+            formData.append('latitude', location.latitude.toString());
+            formData.append('longitude', location.longitude.toString());
+
+            const response = await fetch('http://localhost:3000/api/check-duplicates', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.duplicates && data.duplicates.length > 0) {
+                setDuplicates(data.duplicates);
+                setShowDuplicateModal(true);
+            } else {
+                // No duplicates, proceed with submission
+                submitComplaint();
+            }
+        } catch (err) {
+            console.error("Duplicate check error:", err);
+            // If duplicate check fails, proceed with submission anyway
+            submitComplaint();
+        } finally {
+            setCheckingDuplicates(false);
+        }
+    };
+
+    const submitComplaint = async () => {
         if (!image || !location) return;
 
         setSubmitting(true);
         setErrorMsg('');
 
         try {
-            // Convert base64 to blob
             const res = await fetch(image);
             const blob = await res.blob();
 
@@ -122,7 +165,7 @@ export default function ComplaintPage() {
                 formData.append('user_id', user.id);
             }
 
-            const response = await fetch('http://localhost:5000/api/complaint', {
+            const response = await fetch('http://localhost:3000/api/complaint', {
                 method: 'POST',
                 body: formData
             });
@@ -141,6 +184,41 @@ export default function ComplaintPage() {
         } finally {
             setSubmitting(false);
         }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await checkForDuplicates();
+    };
+
+    const handleSupportExisting = async (complaintId: number) => {
+        try {
+            const currentUser = localStorage.getItem('currentUser');
+            const userId = currentUser ? JSON.parse(currentUser).id : null;
+
+            const response = await fetch(`http://localhost:3000/api/complaint/${complaintId}/upvote`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            });
+
+            if (response.ok) {
+                setShowDuplicateModal(false);
+                setSuccessData({
+                    id: complaintId,
+                    message: 'Your support has been added to the existing complaint!'
+                });
+                setStep(4);
+            }
+        } catch (err) {
+            console.error("Upvote error:", err);
+            setErrorMsg("Failed to add support");
+        }
+    };
+
+    const handleSubmitAnyway = () => {
+        setShowDuplicateModal(false);
+        submitComplaint();
     };
 
     return (
@@ -228,10 +306,22 @@ export default function ComplaintPage() {
 
                         <button
                             type="submit"
-                            disabled={submitting}
-                            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2"
+                            disabled={submitting || checkingDuplicates}
+                            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {submitting ? <RefreshCw className="animate-spin" size={20} /> : "Submit Complaint"}
+                            {checkingDuplicates ? (
+                                <>
+                                    <RefreshCw className="animate-spin" size={20} />
+                                    Checking for duplicates...
+                                </>
+                            ) : submitting ? (
+                                <>
+                                    <RefreshCw className="animate-spin" size={20} />
+                                    Submitting...
+                                </>
+                            ) : (
+                                "Submit Complaint"
+                            )}
                         </button>
                     </form>
 
@@ -250,8 +340,15 @@ export default function ComplaintPage() {
                         <CheckCircle size={40} className="text-white" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Complaint Submitted!</h2>
-                        <p className="text-gray-400">Thank you for reporting. Your ID is #{successData?.id}</p>
+                        <h2 className="text-2xl font-bold text-white mb-2">
+                            {successData?.message || 'Complaint Submitted!'}
+                        </h2>
+                        <p className="text-gray-400">
+                            {successData?.message
+                                ? `Complaint ID: #${successData.id}`
+                                : `Thank you for reporting. Your ID is #${successData?.id}`
+                            }
+                        </p>
                     </div>
                     <button
                         onClick={() => window.location.reload()}
@@ -261,6 +358,16 @@ export default function ComplaintPage() {
                     </button>
                 </div>
             )}
+
+            {/* Duplicate Detection Modal */}
+            <DuplicateDetectionModal
+                isOpen={showDuplicateModal}
+                duplicates={duplicates}
+                currentImage={image || ''}
+                onClose={() => setShowDuplicateModal(false)}
+                onSubmitAnyway={handleSubmitAnyway}
+                onSupportExisting={handleSupportExisting}
+            />
         </div>
     );
 }

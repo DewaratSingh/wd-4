@@ -44,12 +44,12 @@ export default function CitizenDashboard() {
 
         const fetchComplaintsWithLoc = async (loc: { latitude: number; longitude: number; radius: number }, u: User) => {
             try {
-                let url = 'http://localhost:5000/api/my-complaints';
+                let url = 'http://localhost:3000/api/my-complaints';
                 let method = 'POST';
                 let body: string | undefined = JSON.stringify(loc);
 
                 if (view === 'my-complaints' && u.id) {
-                    url = `http://localhost:5000/api/user-complaints/${u.id}`;
+                    url = `http://localhost:3000/api/user-complaints/${u.id}`;
                     method = 'GET';
                     body = undefined;
                 }

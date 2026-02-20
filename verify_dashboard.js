@@ -40,7 +40,7 @@ async function verify() {
         // However, we can use the /api/my-complaints endpoint to check if it returns empty list initially which is also valid.
 
         // Let's try to fetch complaints for this user
-        const res = await fetch('http://localhost:5000/api/my-complaints', {
+        const res = await fetch('http://localhost:3000/api/my-complaints', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

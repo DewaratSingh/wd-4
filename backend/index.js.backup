@@ -106,7 +106,7 @@ const initDb = async () => {
             );
 
             -- Add foreign key constraint if it doesn't exist
-            DO $$
+            DO $
             BEGIN
                 IF NOT EXISTS (
                     SELECT 1 FROM information_schema.table_constraints 
@@ -120,7 +120,7 @@ const initDb = async () => {
                     REFERENCES users(id)
                     ON DELETE SET NULL;
                 END IF;
-            END$$;
+            END$;
         `);
         console.log("Database initialized");
     } catch (err) {
@@ -299,6 +299,85 @@ app.post('/api/my-complaints', async (req, res) => {
     }
 });
 
+// --- Authentication Endpoints ---
+
+app.post('/api/signup', async (req, res) => {
+    const { name, email, password, municipal_name, latitude, longitude, radius } = req.body;
+
+    if (!name || !email || !password || !latitude || !longitude || !radius) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO municipalities (name, email, password, municipal_name, latitude, longitude, radius)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING id, name, email, municipal_name, latitude, longitude, radius`,
+            [name, email, password, municipal_name, latitude, longitude, radius]
+        );
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error("Signup error:", err);
+        if (err.code === '23505') { // Unique violation
+            return res.status(400).json({ error: 'Email already exists' });
+        }
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/signin', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const result = await pool.query(
+            `SELECT id, name, email, municipal_name, latitude, longitude, radius FROM municipalities WHERE email = $1 AND password = $2`,
+            [email, password]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        res.json({ success: true, user: result.rows[0] });
+    } catch (err) {
+        console.error("Signin error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/my-complaints', async (req, res) => {
+    const { latitude, longitude, radius } = req.body;
+
+    if (!latitude || !longitude || !radius) {
+        return res.status(400).json({ error: 'Location and radius required' });
+    }
+
+    try {
+        const result = await pool.query('SELECT * FROM complaints ORDER BY created_at DESC');
+        const allComplaints = result.rows;
+
+        const filteredComplaints = allComplaints.filter(complaint => {
+            if (!complaint.latitude || !complaint.longitude) return false;
+
+            const dist = calculateDistance(
+                parseFloat(latitude),
+                parseFloat(longitude),
+                parseFloat(complaint.latitude),
+                parseFloat(complaint.longitude)
+            );
+
+            complaint.distanceFromMuni = dist;
+            return dist <= parseFloat(radius);
+        });
+
+        res.json({ success: true, complaints: filteredComplaints });
+
+    } catch (err) {
+        console.error("Fetch complaints error:", err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 app.post('/api/complaint', upload.single('image'), async (req, res) => {
     const { notes, phone, latitude, longitude, user_id } = req.body;
@@ -383,7 +462,7 @@ app.post('/api/check-duplicates', upload.single('image'), async (req, res) => {
 
         // Step 3: Use AI to compare images and descriptions
         const duplicates = [];
-
+        
         for (const complaint of nearbyComplaints.slice(0, 5)) { // Check top 5 nearest
             const distance = calculateDistance(
                 parseFloat(latitude),
@@ -446,7 +525,7 @@ Respond ONLY with JSON:
                     if (aiResponse.ok) {
                         const aiData = await aiResponse.json();
                         const content = aiData.choices[0]?.message?.content;
-
+                        
                         // Extract JSON from response
                         const jsonMatch = content.match(/\{[\s\S]*\}/);
                         if (jsonMatch) {
@@ -483,10 +562,10 @@ Respond ONLY with JSON:
         // Sort by similarity score
         duplicates.sort((a, b) => b.similarity - a.similarity);
 
-        res.json({
-            success: true,
+        res.json({ 
+            success: true, 
             duplicates: duplicates.slice(0, 3), // Return top 3 matches
-            currentImageUrl
+            currentImageUrl 
         });
 
     } catch (error) {
@@ -498,13 +577,13 @@ Respond ONLY with JSON:
 // Helper function for basic text similarity
 function calculateTextSimilarity(text1, text2) {
     if (!text1 || !text2) return 0;
-
+    
     const words1 = text1.toLowerCase().split(/\s+/);
     const words2 = text2.toLowerCase().split(/\s+/);
-
+    
     const commonWords = words1.filter(word => words2.includes(word));
     const similarity = (commonWords.length * 2) / (words1.length + words2.length) * 100;
-
+    
     return Math.min(similarity, 100);
 }
 
@@ -516,12 +595,12 @@ app.post('/api/complaint/:id/upvote', async (req, res) => {
     try {
         // Add upvotes column if it doesn't exist
         await pool.query(`
-            DO $$
+            DO $
             BEGIN
                 IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='complaints' AND column_name='upvotes') THEN
                     ALTER TABLE complaints ADD COLUMN upvotes INTEGER DEFAULT 0;
                 END IF;
-            END$$;
+            END$;
         `);
 
         // Increment upvote count

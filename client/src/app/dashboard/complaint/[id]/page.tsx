@@ -24,7 +24,7 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
 
     const fetchComplaint = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/complaint/${id}`);
+            const res = await fetch(`http://localhost:3000/api/complaint/${id}`);
             const data = await res.json();
             if (data.success) {
                 setComplaint(data.complaint);
@@ -42,7 +42,7 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
         setUpdating(true);
         setMessage('');
         try {
-            const res = await fetch('http://localhost:5000/api/complaint/update', {
+            const res = await fetch('http://localhost:3000/api/complaint/update', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
